@@ -1,33 +1,35 @@
 # build-stockly-backend
-======
 For our Backend Engineers. The core logic of our system lives here, communicating with DS, flowing downwards to FE.
 
-#Packages Used
+# NPM Packages
 ======
 Express
+Helmet
+Cors
 Knex
 Sqlite3
-jsonwebtoken
+Postgres
+Jsonwebtoken
 
-#Schemas
+# Schemas
 ======
 
-##Users
+## Users
 username
 email
 password
 
-##Stocks
+## Stocks
 ticker
 name
 
-#Endpoints
+# Endpoints
 ======
 
 ## Authorization
-======
 
 ### GET /auth/login
+======
 **Expected Payload:**
 ```
 {
@@ -47,6 +49,7 @@ name
 ```
 
 #### POST /auth/register
+======
 **Expected Payload:**
 ```
 {
@@ -65,6 +68,3 @@ name
     }
 }
 ```
-
-
-/stocks
