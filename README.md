@@ -2,7 +2,6 @@
 For our Backend Engineers. The core logic of our system lives here, communicating with DS, flowing downwards to FE.
 
 # NPM Packages
-======
 Express
 Helmet
 Cors
@@ -12,7 +11,6 @@ Postgres
 Jsonwebtoken
 
 # Schemas
-======
 
 ## Users
 username
@@ -24,12 +22,10 @@ ticker
 name
 
 # Endpoints
-======
 
 ## Authorization
 
 ### GET /auth/login
-======
 **Expected Payload:**
 ```
 {
@@ -48,8 +44,7 @@ name
 }
 ```
 
-#### POST /auth/register
-======
+### POST /auth/register
 **Expected Payload:**
 ```
 {
