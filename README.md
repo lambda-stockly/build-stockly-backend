@@ -35,7 +35,7 @@ jsonwebtoken
 
 ## Authorization
 
-### GET /auth/login
+### POST /auth/login
 **Expected Payload:**
 ```
 {
