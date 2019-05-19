@@ -39,7 +39,7 @@ jsonwebtoken
 **Expected Payload:**
 ```
 {
-    username: "bob",
+    email: "bob@gmail.com",
     password: "pass123"
 }
 ```
