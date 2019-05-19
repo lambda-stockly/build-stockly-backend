@@ -12,10 +12,11 @@ pg
 jsonwebtoken
 ```
 
-# Schemas
+# Resource Schemas
 
 ## Users
-```{
+```
+{
     username: "bob",
     email: "bob@gmail.com",
     password: "pass123"
@@ -23,7 +24,8 @@ jsonwebtoken
 ```
 
 ## Stocks
-```{
+```
+{
     ticker: "AMZN",
     name: "Amazon"
 }
