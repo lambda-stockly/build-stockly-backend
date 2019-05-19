@@ -2,24 +2,32 @@
 For our Backend Engineers. The core logic of our system lives here, communicating with DS, flowing downwards to FE.
 
 # NPM Packages
-Express
-Helmet
-Cors
-Knex
-Sqlite3
-Postgres
-Jsonwebtoken
+```
+express
+helmet
+cors
+knex
+sqlite3
+pg
+jsonwebtoken
+```
 
 # Schemas
 
 ## Users
-username
-email
-password
+```{
+    username: "bob",
+    email: "bob@gmail.com",
+    password: "pass123"
+}
+```
 
 ## Stocks
-ticker
-name
+```{
+    ticker: "AMZN",
+    name: "Amazon"
+}
+```
 
 # Endpoints
 
