@@ -36,7 +36,7 @@ router.post('/login', (req, res) => {
         });
     } else {
 
-        dbApi.login(req.body.username)
+        dbApi.login(req.body.email)
         .then(user => {
             if (!user || !bcrypt.compareSync(req.body.password, user.password)) {
                 res.status(422).send({
@@ -59,7 +59,7 @@ router.post('/login', (req, res) => {
             }
         })
         .catch(err=>{
-            res.status(422).send({
+            res.status(500).send({
                 message: 'Internal Server Error'
             });
         })
@@ -130,7 +130,7 @@ router.post('/register', (req, res) => {
 
         })
         .catch(err=>{
-            res.status(422).send({
+            res.status(500).send({
                 message: 'Internal Server Error'
             });
         });
