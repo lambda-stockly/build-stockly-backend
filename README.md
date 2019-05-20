@@ -15,6 +15,7 @@ bcrypt
 development:
 dotenv
 sqlite3
+cross-env
 ```
 
 # Resource Schemas
