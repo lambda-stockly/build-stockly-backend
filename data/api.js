@@ -7,7 +7,7 @@ module.exports = {
 
 function register(user) {
     return db('users')
-        .insert(user)
+        .insert(user, 'id')
         .then(id => {
             return db('users')
             .where({
