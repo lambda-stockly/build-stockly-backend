@@ -1,5 +1,5 @@
 const express = require('express');
-const dbApi = require('./data/api');
+const dbApi = require('../data/api');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 

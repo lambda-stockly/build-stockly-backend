@@ -11,6 +11,7 @@ knex
 pg
 jsonwebtoken
 bcrypt
+axios
 
 development:
 dotenv
