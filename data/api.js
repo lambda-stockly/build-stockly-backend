@@ -7,7 +7,14 @@ module.exports = {
 
 function register(user) {
     return db('users')
-        .insert(user);
+        .insert(user)
+        .then(id => {
+            return db('users')
+            .where({
+                id: id[0]
+            })
+            .first();
+        });
 }
 
 function login(email) {
