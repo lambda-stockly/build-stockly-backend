@@ -34,7 +34,18 @@ cross-env
 ```
 {
     ticker: "AMZN",
-    name: "Amazon"
+    actionThresholds: {
+        TA: {
+            sell: 0.5,
+            hold: 0.25,
+            buy: 0.25
+        },
+        Sentiment: {
+            sell: 0.5,
+            hold: 0.25,
+            buy: 0.25
+        }
+    }
 }
 ```
 
@@ -77,6 +88,27 @@ cross-env
     user: {
         username: "bob",
         email: "bob@gmail.com"
+    }
+}
+```
+
+### GET /stocks/:ticker
+**Expected Parameter:** The ticker symbol of the stock
+**Returns:**
+```
+{
+    ticker: "AMZN",
+    actionThresholds: {
+        TA: {
+            sell: 0.5,
+            hold: 0.25,
+            buy: 0.25
+        },
+        Sentiment: {
+            sell: 0.5,
+            hold: 0.25,
+            buy: 0.25
+        }
     }
 }
 ```

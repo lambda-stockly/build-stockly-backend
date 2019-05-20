@@ -89,8 +89,6 @@ Returns:
 */
 router.post('/register', (req, res) => {
 
-    console.log('registering')
-
     if (req.body.email === undefined || req.body.email.trim().length === 0) {
         res.status(400).send({
             message: 'Please provide an email'
