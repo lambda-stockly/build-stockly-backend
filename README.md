@@ -3,13 +3,17 @@ For our Backend Engineers. The core logic of our system lives here, communicatin
 
 # NPM Packages
 ```
+production:
 express
 helmet
 cors
 knex
-sqlite3
 pg
 jsonwebtoken
+
+development:
+dotenv
+sqlite3
 ```
 
 # Resource Schemas
