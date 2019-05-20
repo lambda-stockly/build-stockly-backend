@@ -10,6 +10,7 @@ cors
 knex
 pg
 jsonwebtoken
+bcrypt
 
 development:
 dotenv

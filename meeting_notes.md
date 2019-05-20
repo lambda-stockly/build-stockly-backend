@@ -17,6 +17,17 @@ C. Tweet sentiment analysis
 C1. How will this be measured? On what scale
 - 0 through 100
 
+DS API:
+Request: A POST request which name='ticker'
+Response: {
+    'TA': {
+        'sell':0.5,'hold':0.25,'buy':0.25
+    }, 
+    'Sentiment': {
+        'sell:0.5,'hold':0.25,'buy':0.25
+    }
+}
+
 Process:
 Get stock info
 Perform technical analysis
