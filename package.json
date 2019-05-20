@@ -4,8 +4,9 @@
   "description": "For our Backend Engineers. The core logic of our system lives here, communicating with DS, flowing downwards to FE.",
   "main": "index.js",
   "scripts": {
+    "dev": "nodemon index.js",
     "test": "cross-env DB_ENV=testing jest --watch --verbose",
-    "start": "nodemon index.js"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
