@@ -15,8 +15,7 @@ exports.up = function (knex, Promise) {
         tbl.timestamp('created_at')
             .defaultTo(knex.fn.now());
 
-        tbl.boolean('new_response')
-            .defaultTo(knex.fn.now());
+        tbl.boolean('new_response');
 
         tbl.json('response').nullable();
     });
