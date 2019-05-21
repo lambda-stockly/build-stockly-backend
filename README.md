@@ -24,9 +24,11 @@ cross-env
 ## Users
 ```
 {
+    id: 1
     username: "bob",
     email: "bob@gmail.com",
-    password: "pass123"
+    password: "pass123",
+    created_at: "1519211809934"
 }
 ```
 
