@@ -1,8 +1,8 @@
-const db = require('./dbConfig');
+const db = require('../dbConfig');
 
 module.exports = {
     register,
-    login
+    login,
 }
 
 function register(user) {

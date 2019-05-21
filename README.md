@@ -28,7 +28,8 @@ cross-env
     username: "bob",
     email: "bob@gmail.com",
     password: "pass123",
-    created_at: "1519211809934"
+    created_at: "1519211809934",
+    updated_at: "1519211809934"
 }
 ```
 

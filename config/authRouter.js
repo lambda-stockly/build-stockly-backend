@@ -1,5 +1,5 @@
 const express = require('express');
-const dbApi = require('../data/api');
+const authApi = require('../data/api/auth');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
@@ -36,7 +36,7 @@ router.post('/login', (req, res) => {
         });
     } else {
 
-        dbApi.login(req.body.email)
+        authApi.login(req.body.email)
         .then(user => {
             if (!user || !bcrypt.compareSync(req.body.password, user.password)) {
                 res.status(422).send({
@@ -106,7 +106,7 @@ router.post('/register', (req, res) => {
 
         const hashedPass = bcrypt.hashSync(req.body.password,14);
 
-        dbApi.register({
+        authApi.register({
             username: req.body.username,
             email: req.body.email,
             password: hashedPass,
