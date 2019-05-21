@@ -65,6 +65,7 @@ cross-env
 
 ## POST /auth/login
 - Log an existing user in
+
 **Expected Payload:**
 ```
 {
@@ -85,6 +86,7 @@ cross-env
 
 ## POST /auth/register
 - Register a new user
+
 **Expected Payload:**
 ```
 {
@@ -107,6 +109,7 @@ cross-env
 ## GET /favorites
 ### Protected Route
 - Get a user's favorite stocks
+
 **Expected Header:**
 ```
 Authorization: "token from local storage or app state"
@@ -126,6 +129,7 @@ Authorization: "token from local storage or app state"
 ## POST /favorites
 ### Protected Route
 - Add to a user's favorite stocks
+
 **Expected Header:**
 ```
 Authorization: "token from local storage or app state"
@@ -151,6 +155,7 @@ Authorization: "token from local storage or app state"
 ## DELETE /favorites
 ### Protected Route
 - Delete a user's favorite stock
+
 **Expected Header:**
 ```
 Authorization: "token from local storage or app state"
@@ -174,6 +179,7 @@ Authorization: "token from local storage or app state"
 
 ## GET /stocks/:ticker
 - Get a stock's information
+
 **Expected Parameter:** The ticker symbol of the stock
 **Returns:**
 ```
@@ -196,6 +202,7 @@ Authorization: "token from local storage or app state"
 
 ## GET /top/searched
 - Get the most searched for stocks
+
 **Returns:**
 ```
 {
@@ -210,6 +217,7 @@ Authorization: "token from local storage or app state"
 
 ## GET /top/favorited
 - Get the most favorited stocks
+
 **Returns:**
 ```
 {
