@@ -56,10 +56,11 @@ router.get('/', (req, res) => {
                 updated_at,
                 actionThresholds: JSON.parse(data)
             }))
-            
+
             res.status(200).send(responseWithParsedJSON);
         })
         .catch(err => {
+            console.log(err)
             res.status(500).send({
                 message: 'Internal Server Error'
             });
