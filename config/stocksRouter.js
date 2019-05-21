@@ -18,7 +18,7 @@ router.get('/:ticker', (req, res) => {
             } else if (Date.parse(stocksApiResponse.updated_at) > new Date(Date.now() - 86400 * 1000).getTime()) {
                 res.status(200).send({
                     ticker: req.params.ticker,
-                    actionThresholds: JSON.parse(stocksApiResponse.data)
+                    actionThresholds: stocksApiResponse.data
                 });
             } else {
                 return dsApi();
@@ -56,20 +56,18 @@ router.get('/', (req, res) => {
                 updated_at,
                 data
             }) => {
-                console.log(data);
                 return {
                     id,
                     ticker,
                     created_at,
                     updated_at,
-                    actionThresholds: JSON.parse(data)
+                    actionThresholds: data
                 }
             })
 
             res.status(200).send(responseWithParsedJSON);
         })
         .catch(err => {
-            console.log(err)
             res.status(500).send({
                 message: 'Internal Server Error'
             });
