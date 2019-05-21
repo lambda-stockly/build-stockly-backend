@@ -15,6 +15,9 @@ exports.up = function (knex, Promise) {
 
         tbl.timestamp('created_at')
             .defaultTo(knex.fn.now());
+
+        tbl.timestamp('updated_at')
+            .defaultTo(knex.fn.now());
     });
 };
 

@@ -28,7 +28,8 @@ cross-env
     username: "bob",
     email: "bob@gmail.com",
     password: "pass123",
-    created_at: "1519211809934"
+    created_at: "1519211809934",
+    updated_at: "1519211809934"
 }
 ```
 
@@ -177,6 +178,55 @@ Authorization: "token from local storage or app state"
         "AAPL"
     ]
 }
+```
+
+## GET /stocks
+- Get all stock information
+
+**Returns:**
+```
+[
+    {
+        "id": 1,
+        "ticker": "AMZN",
+        "created_at": "2019-05-21 21:33:28",
+        "updated_at": "2019-05-21 21:33:28",
+        "actionThresholds": {
+            "actionThresholds": {
+                "TA": {
+                    "sell": 0.38,
+                    "hold": 0.43,
+                    "buy": 0.19
+                },
+                "Sentiment": {
+                    "sell": 0.5,
+                    "hold": 0.25,
+                    "buy": 0.25
+                }
+            }
+        }
+    },
+    {
+        "id": 2,
+        "ticker": "GOOG",
+        "created_at": "2019-05-21 21:43:25",
+        "updated_at": "2019-05-21 21:43:25",
+        "actionThresholds": {
+            "actionThresholds": {
+                "TA": {
+                    "sell": 0.38,
+                    "hold": 0.43,
+                    "buy": 0.19
+                },
+                "Sentiment": {
+                    "sell": 0.5,
+                    "hold": 0.25,
+                    "buy": 0.25
+                }
+            }
+        }
+    }
+]
 ```
 
 ## GET /stocks/:ticker
