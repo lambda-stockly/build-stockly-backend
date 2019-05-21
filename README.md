@@ -49,11 +49,22 @@ cross-env
 }
 ```
 
+## Favorites & Top
+```
+{
+    [
+        "AMZN",
+        "GOOG",
+        "JPM",
+        "AAPL"
+    ]
+}
+```
+
 # Endpoints
 
-## Authorization
-
-### POST /auth/login
+## POST /auth/login
+- Log an existing user in
 **Expected Payload:**
 ```
 {
@@ -72,7 +83,8 @@ cross-env
 }
 ```
 
-### POST /auth/register
+## POST /auth/register
+- Register a new user
 **Expected Payload:**
 ```
 {
@@ -92,7 +104,76 @@ cross-env
 }
 ```
 
-### GET /stocks/:ticker
+## GET /favorites
+### Protected Route
+- Get a user's favorite stocks
+**Expected Header:**
+```
+Authorization: "token from local storage or app state"
+```
+**Returns:**
+```
+{
+    [
+        "AMZN",
+        "GOOG",
+        "JPM",
+        "AAPL"
+    ]
+}
+```
+
+## POST /favorites
+### Protected Route
+- Add to a user's favorite stocks
+**Expected Header:**
+```
+Authorization: "token from local storage or app state"
+```
+**Expected Payload:**
+```
+{
+    "AMZN"
+}
+```
+**Returns:**
+```
+{
+    [
+        "AMZN",
+        "GOOG",
+        "JPM",
+        "AAPL"
+    ]
+}
+```
+
+## DELETE /favorites
+### Protected Route
+- Delete a user's favorite stock
+**Expected Header:**
+```
+Authorization: "token from local storage or app state"
+```
+**Expected Payload:**
+```
+{
+    "AMZN"
+}
+```
+**Returns:**
+```
+{
+    [
+        "GOOG",
+        "JPM",
+        "AAPL"
+    ]
+}
+```
+
+## GET /stocks/:ticker
+- Get a stock's information
 **Expected Parameter:** The ticker symbol of the stock
 **Returns:**
 ```
@@ -110,5 +191,33 @@ cross-env
             buy: 0.25
         }
     }
+}
+```
+
+## GET /top/searched
+- Get the most searched for stocks
+**Returns:**
+```
+{
+    [
+        "AMZN",
+        "GOOG",
+        "JPM",
+        "AAPL"
+    ]
+}
+```
+
+## GET /top/favorited
+- Get the most favorited stocks
+**Returns:**
+```
+{
+    [
+        "AMZN",
+        "GOOG",
+        "JPM",
+        "AAPL"
+    ]
 }
 ```
