@@ -45,7 +45,8 @@ router.post('/login', (req, res) => {
             } else {
                 const sanitizedUser = {
                     username: user.username,
-                    email: user.email
+                    email: user.email,
+                    created_at: user.created_at
                 };
     
                 const token = jwt.sign(sanitizedUser, jwtSecret, {
@@ -114,7 +115,8 @@ router.post('/register', (req, res) => {
 
             const sanitizedUser = {
                 username: user.username,
-                email: user.email
+                email: user.email,
+                created_at: user.created_at
             };
 
             const token = jwt.sign(sanitizedUser, jwtSecret, {
