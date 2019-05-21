@@ -49,13 +49,22 @@ router.get('/', (req, res) => {
 
     stocksApi.getAll()
         .then(stocksApiResponse => {
-            const responseWithParsedJSON = stocksApiResponse.map(({id,ticker,created_at,updated_at,data}) => ({
+            const responseWithParsedJSON = stocksApiResponse.map(({
                 id,
                 ticker,
                 created_at,
                 updated_at,
-                actionThresholds: JSON.parse(data)
-            }))
+                data
+            }) => {
+                console.log(data);
+                return {
+                    id,
+                    ticker,
+                    created_at,
+                    updated_at,
+                    actionThresholds: JSON.parse(data)
+                }
+            })
 
             res.status(200).send(responseWithParsedJSON);
         })
