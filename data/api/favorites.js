@@ -6,30 +6,29 @@ module.exports = {
     delete
 }
 
-function insert(user) {
-    // return db('users')
-    //     .insert(user, 'id')
-    //     .then(id => {
-    //         return db('users')
-    //             .where({
-    //                 id: id[0]
-    //             })
-    //             .first();
-    //     });
+function insert(payload) {
+    return db('favorites')
+        .insert(payload, 'id')
+        .then(id => {
+            return db('favorites')
+                .where({
+                    user_id: favorite.user_id
+                });
+        });
 }
 
-function getByUser(email) {
-    // return db('users')
-    //     .where({
-    //         email
-    //     })
-    //     .first();
+function getByUser(user_id) {
+    return db('favorites')
+        .where({
+            user_id
+        });
 }
 
-function delete(email) {
-    // return db('users')
-    //     .where({
-    //         email
-    //     })
-    //     .first();
+function delete(user_id,ticker) {
+    return db('users')
+        .where({
+            user_id,
+            ticker
+        })
+        .del();
 }

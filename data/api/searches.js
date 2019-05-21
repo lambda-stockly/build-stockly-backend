@@ -7,38 +7,35 @@ module.exports = {
     getByUser,
 }
 
-function insert(user) {
-    // return db('users')
-    //     .insert(user, 'id')
-    //     .then(id => {
-    //         return db('users')
-    //         .where({
-    //             id: id[0]
-    //         })
-    //         .first();
-    //     });
+function insert(payload) {
+    return db('searches')
+        .insert(payload, 'id')
+        .then(id => {
+            return db('searches')
+            .where({
+                id: id[0]
+            })
+            .first();
+        });
 }
 
-function getAll(email) {
-    // return db('users')
-    //     .where({
-    //         email
-    //     })
-    //     .first();
+function getAll() {
+    return db('searches');
 }
 
-function getByTicker(email) {
-    // return db('users')
-    //     .where({
-    //         email
-    //     })
-    //     .first();
+function getByTicker(ticker) {
+    return db('searches')
+        .where({
+            ticker,
+            new_response: true
+        })
+        .orderBy('created_at', 'desc')
+        .first();
 }
 
-function getByUser(email) {
-    // return db('users')
-    //     .where({
-    //         email
-    //     })
-    //     .first();
+function getByUser(user_id) {
+    return db('searches')
+        .where({
+            user_id
+        });
 }

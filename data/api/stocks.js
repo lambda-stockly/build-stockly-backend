@@ -7,38 +7,35 @@ module.exports = {
     update,
 }
 
-function insert(user) {
-    // return db('users')
-    //     .insert(user, 'id')
-    //     .then(id => {
-    //         return db('users')
-    //         .where({
-    //             id: id[0]
-    //         })
-    //         .first();
-    //     });
+function insert(payload) {
+    return db('stocks')
+        .insert(payload, 'id')
+        .then(id => {
+            return db('stocks')
+            .where({
+                id: id[0]
+            })
+            .first();
+        });
 }
 
-function getAll(email) {
-    // return db('users')
-    //     .where({
-    //         email
-    //     })
-    //     .first();
+function getAll() {
+    return db('stocks');
 }
 
-function getByTicker(email) {
-    // return db('users')
-    //     .where({
-    //         email
-    //     })
-    //     .first();
+function getByTicker(ticker) {
+    return db('stocks')
+        .where({
+            ticker
+        })
+        .first();
 }
 
-function getByUser(email) {
-    // return db('users')
-    //     .where({
-    //         email
-    //     })
-    //     .first();
+function update(ticker,payload) {
+    return db('users')
+        .where({
+            ticker
+        })
+        .update(payload)
+        .first();
 }
