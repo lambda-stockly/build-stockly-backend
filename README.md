@@ -92,6 +92,71 @@ cross-env
 }
 ```
 
+### GET /favorites
+## Protected Route
+**Expected Header:**
+```
+Authorization: "token from local storage or app state"
+```
+**Returns:**
+```
+{
+    [
+        "AMZN",
+        "GOOG",
+        "JPM",
+        "AAPL"
+    ]
+}
+```
+
+### POST /favorites
+## Protected Route
+**Expected Header:**
+```
+Authorization: "token from local storage or app state"
+```
+**Expected Payload:**
+```
+{
+    "AMZN"
+}
+```
+**Returns:**
+```
+{
+    [
+        "AMZN",
+        "GOOG",
+        "JPM",
+        "AAPL"
+    ]
+}
+```
+
+### DELETE /favorites
+## Protected Route
+**Expected Header:**
+```
+Authorization: "token from local storage or app state"
+```
+**Expected Payload:**
+```
+{
+    "AMZN"
+}
+```
+**Returns:**
+```
+{
+    [
+        "GOOG",
+        "JPM",
+        "AAPL"
+    ]
+}
+```
+
 ### GET /stocks/:ticker
 **Expected Parameter:** The ticker symbol of the stock
 **Returns:**
@@ -110,5 +175,31 @@ cross-env
             buy: 0.25
         }
     }
+}
+```
+
+### GET /top/searched
+**Returns:**
+```
+{
+    [
+        "AMZN",
+        "GOOG",
+        "JPM",
+        "AAPL"
+    ]
+}
+```
+
+### GET /top/favorited
+**Returns:**
+```
+{
+    [
+        "AMZN",
+        "GOOG",
+        "JPM",
+        "AAPL"
+    ]
 }
 ```
