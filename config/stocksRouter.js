@@ -1,6 +1,7 @@
 const express = require('express');
 const dataScienceApi = require('../data/api/datascience');
 const stocksApi = require('../data/api/stocks');
+const searchesApi = require('../data/api/searches');
 const router = express.Router();
 
 router.get('/:ticker', (req, res) => {
@@ -16,11 +17,22 @@ router.get('/:ticker', (req, res) => {
             if (stocksApiResponse === undefined) {
                 return dataScienceApi();
             } else if (Date.parse(stocksApiResponse.updated_at) > new Date(Date.now() - 86400 * 1000).getTime()) {
-                const actionThresholds = stocksApiResponse.data.actionThresholds;
+                let actionThresholds;                
+                if(process.env.DB_ENV === 'development' || process.env.DB_ENV === 'testing') {
+                    actionThresholds = JSON.parse(stocksApiResponse.data).actionThresholds;
+                } else {
+                    actionThresholds = stocksApiResponse.data.actionThresholds;
+                }
                 res.status(200).send({
                     ticker: req.params.ticker,
                     actionThresholds 
                 });
+                searchesApi.insert({
+                    user_id: req.headers.user.id,
+                    ticker: req.params.ticker,
+                    new_response: 0,
+                    response: JSON.stringify(actionThresholds)
+                })
             } else {
                 return dataScienceApi();
             }
@@ -30,6 +42,12 @@ router.get('/:ticker', (req, res) => {
                 stocksApi.insert({
                     ticker: req.params.ticker,
                     data: JSON.stringify({actionThresholds: apiResponse.data})
+                });
+                searchesApi.insert({
+                    user_id: req.headers.user.id,
+                    ticker: req.params.ticker,
+                    new_response: 1,
+                    response: JSON.stringify(apiResponse.data)
                 });
                 res.status(200).send({
                     ticker: req.params.ticker,
@@ -42,7 +60,6 @@ router.get('/:ticker', (req, res) => {
             }
         })
         .catch(err => {
-            console.log(err)
             res.status(500).send({
                 message: 'Internal Server Error'
             });
@@ -61,7 +78,12 @@ router.get('/', (req, res) => {
                 data
             }) => {
                 
-                const actionThresholds = data.actionThresholds;
+                let actionThresholds;                
+                if(process.env.DB_ENV === 'development' || process.env.DB_ENV === 'testing') {
+                    actionThresholds = JSON.parse(data).actionThresholds;
+                } else {
+                    actionThresholds = data.actionThresholds;
+                }
 
                 return {
                     id,
