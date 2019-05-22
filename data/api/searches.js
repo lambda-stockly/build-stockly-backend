@@ -27,7 +27,7 @@ function getByTicker(ticker) {
     return db('searches')
         .where({
             ticker,
-            new_response: true
+            new_response: 1
         })
         .orderBy('created_at', 'desc')
         .first();

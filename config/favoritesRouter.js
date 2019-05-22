@@ -2,6 +2,7 @@ const express = require('express');
 const favoritesApi = require('../data/api/favorites');
 const stocksApi = require('../data/api/stocks');
 const dataScienceApi = require('../data/api/datascience');
+const searchesApi = require('../data/api/searches');
 const router = express.Router();
 
 router.get('/', (req, res) => {
@@ -11,8 +12,16 @@ router.get('/', (req, res) => {
             return stocksApi.getAllById(allFavorites.map(fav => fav.stock_id));
         })
         .then(allStocks => {
-            const parsedStocks = allStocks.map(stock=> {
-                stock.actionThresholds = stock.data.actionThresholds;
+            const parsedStocks = allStocks.map(stock => {
+
+                let actionThresholds;
+                if (process.env.DB_ENV === 'development' || process.env.DB_ENV === 'testing') {
+                    actionThresholds = JSON.parse(stock.data).actionThresholds;
+                } else {
+                    actionThresholds = data.actionThresholds;
+                }
+
+                stock.actionThresholds = actionThresholds;
                 delete stock.data;
                 return stock;
             })
@@ -47,9 +56,15 @@ router.post('/', (req, res) => {
                 } else {
                     return dataScienceApi()
                         .then(dataScienceResponse => {
-                            if(dataScienceResponse !== undefined && apiResponse.data.contains('Thank you for using Alpha Vantage!')) {
+                            if (dataScienceResponse !== undefined && typeof dataScienceResponse.data !== 'object') {
                                 throw new Error('Alpha Vantage API Limit Reached')
                             } else {
+                                searchesApi.insert({
+                                    user_id: req.headers.user.id,
+                                    ticker: req.body.ticker,
+                                    new_response: 1,
+                                    response: JSON.stringify(dataScienceResponse.data)
+                                })
                                 return stocksApi.insert({
                                     ticker: req.body.ticker,
                                     data: JSON.stringify({
@@ -85,8 +100,15 @@ router.post('/', (req, res) => {
             })
             .then(allStocks => {
                 if (allStocks !== undefined) {
-                    const parsedStocks = allStocks.map(stock=> {
-                        stock.actionThresholds = stock.data.actionThresholds;
+                    const parsedStocks = allStocks.map(stock => {
+
+                        let actionThresholds;
+                        if (process.env.DB_ENV === 'development' || process.env.DB_ENV === 'testing') {
+                            actionThresholds = JSON.parse(stock.data).actionThresholds;
+                        } else {
+                            actionThresholds = data.actionThresholds;
+                        }
+                        stock.actionThresholds = actionThresholds;
                         delete stock.data;
                         return stock;
                     })
@@ -96,6 +118,7 @@ router.post('/', (req, res) => {
                 }
             })
             .catch(err => {
+                console.log(err)
                 res
                     .status(500)
                     .send({
@@ -125,8 +148,15 @@ router.delete('/', (req, res) => {
                 return stocksApi.getAllById(allFavorites.map(fav => fav.stock_id));
             })
             .then(allStocks => {
-                const parsedStocks = allStocks.map(stock=> {
-                    stock.actionThresholds = stock.data.actionThresholds;
+                const parsedStocks = allStocks.map(stock => {
+
+                    let actionThresholds;
+                    if (process.env.DB_ENV === 'development' || process.env.DB_ENV === 'testing') {
+                        actionThresholds = JSON.parse(stock.data).actionThresholds;
+                    } else {
+                        actionThresholds = data.actionThresholds;
+                    }
+                    stock.actionThresholds = actionThresholds;
                     delete stock.data;
                     return stock;
                 })
