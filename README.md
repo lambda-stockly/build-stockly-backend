@@ -1,6 +1,8 @@
 # build-stockly-backend
 For our Backend Engineers. The core logic of our system lives here, communicating with DS, flowing downwards to FE.
 
+# https://stockly-backend.herokuapp.com/
+
 # NPM Packages
 ```
 production:
@@ -141,26 +143,7 @@ Authorization: "token from local storage or app state"
                 }
             }
         },
-        {
-            "id": 2,
-            "ticker": "GOOG",
-            "created_at": "2019-05-22T15:20:05.285Z",
-            "updated_at": "2019-05-22T15:20:05.285Z",
-            "data": {
-                "actionThresholds": {
-                    "TA": {
-                        "sell": 0.13,
-                        "hold": 0.66,
-                        "buy": 0.21
-                    },
-                    "Sentiment": {
-                        "sell": 0.5,
-                        "hold": 0.25,
-                        "buy": 0.25
-                    }
-                }
-            }
-        }
+        ...
     ]
 }
 ```
@@ -203,33 +186,14 @@ Authorization: "token from local storage or app state"
                 }
             }
         },
-        {
-            "id": 2,
-            "ticker": "GOOG",
-            "created_at": "2019-05-22T15:20:05.285Z",
-            "updated_at": "2019-05-22T15:20:05.285Z",
-            "data": {
-                "actionThresholds": {
-                    "TA": {
-                        "sell": 0.13,
-                        "hold": 0.66,
-                        "buy": 0.21
-                    },
-                    "Sentiment": {
-                        "sell": 0.5,
-                        "hold": 0.25,
-                        "buy": 0.25
-                    }
-                }
-            }
-        }
+        ...
     ]
 }
 ```
 
 ## DELETE /favorites
 ### Protected Route
-- Delete a user's favorite stock
+- Deletes a user's favorite stock
 
 **Expected Header:**
 ```
@@ -265,81 +229,57 @@ Authorization: "token from local storage or app state"
                 }
             }
         },
-        {
-            "id": 2,
-            "ticker": "GOOG",
-            "created_at": "2019-05-22T15:20:05.285Z",
-            "updated_at": "2019-05-22T15:20:05.285Z",
-            "data": {
-                "actionThresholds": {
-                    "TA": {
-                        "sell": 0.13,
-                        "hold": 0.66,
-                        "buy": 0.21
-                    },
-                    "Sentiment": {
-                        "sell": 0.5,
-                        "hold": 0.25,
-                        "buy": 0.25
-                    }
-                }
-            }
-        }
+        ...
     ]
 }
 ```
 
 ## GET /stocks
-- Get all stock information
+### Protected Route
+- Returns all unique stocks' information that have been searched previously
+
+**Expected Header:**
+```
+Authorization: "token from local storage or app state"
+```
 
 **Returns:**
 ```
-[
-    {
-        id: 1,
-        ticker: "AMZN",
-        created_at: "2019-05-21 21:33:28",
-        updated_at: "2019-05-21 21:33:28",
-        data: {
-            actionThresholds: {
-                TA: {
-                    sell: 0.38,
-                    hold: 0.43,
-                    buy: 0.19
-                },
-                Sentiment: {
-                    sell: 0.5,
-                    hold: 0.25,
-                    buy: 0.25
+{
+    [
+        {
+            id: 1,
+            ticker: "AMZN",
+            created_at: "2019-05-21 21:33:28",
+            updated_at: "2019-05-21 21:33:28",
+            data: {
+                actionThresholds: {
+                    TA: {
+                        sell: 0.38,
+                        hold: 0.43,
+                        buy: 0.19
+                    },
+                    Sentiment: {
+                        sell: 0.5,
+                        hold: 0.25,
+                        buy: 0.25
+                    }
                 }
             }
-        }
-    },
-    {
-        id: 2,
-        ticker: "GOOG",
-        created_at: "2019-05-21 21:43:25",
-        updated_at: "2019-05-21 21:43:25",
-        data: {
-            actionThresholds: {
-                TA: {
-                    sell: 0.38,
-                    hold: 0.43,
-                    buy: 0.19
-                },
-                Sentiment: {
-                    sell: 0.5,
-                    hold: 0.25,
-                    buy: 0.25
-                }
-            }
-        }
-    }
-]
+        },
+        ...
+    ]
+}
 ```
 
 ## GET /stocks/:ticker
-- Get a stock's information
+### Protected Route
+- Returns a stock's information
+
+**Expected Header:**
+```
+Authorization: "token from local storage or app state"
+```
 
 **Expected Parameter:** The ticker symbol of the stock
 **Returns:**
@@ -361,32 +301,39 @@ Authorization: "token from local storage or app state"
 }
 ```
 
-## GET /top/searched
-- Get the most searched for stocks
+## GET /top
+### Protected Route
+- Returns the top 5 most searched for stocks
+
+**Expected Header:**
+```
+Authorization: "token from local storage or app state"
+```
 
 **Returns:**
 ```
 {
     [
-        "AMZN",
-        "GOOG",
-        "JPM",
-        "AAPL"
-    ]
-}
-```
-
-## GET /top/favorited
-- Get the most favorited stocks
-
-**Returns:**
-```
-{
-    [
-        "AMZN",
-        "GOOG",
-        "JPM",
-        "AAPL"
+        {
+            "rank": 1,
+            "id": 1,
+            "ticker": "AAPL",
+            "created_at": "2019-05-22 01:13:33",
+            "updated_at": "2019-05-22 01:13:33",
+            "actionThresholds": {
+                "TA": {
+                    "sell": 0.13,
+                    "hold": 0.66,
+                    "buy": 0.21
+                },
+                "Sentiment": {
+                    "sell": 0.5,
+                    "hold": 0.25,
+                    "buy": 0.25
+                }
+            }
+        },
+        ...
     ]
 }
 ```
