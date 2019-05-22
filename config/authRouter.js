@@ -1,5 +1,6 @@
 const express = require('express');
 const authApi = require('../data/api/auth');
+const usersApi = require('../data/api/users');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
@@ -105,28 +106,43 @@ router.post('/register', (req, res) => {
 
         const hashedPass = bcrypt.hashSync(req.body.password, 14);
 
-        authApi.register({
-                username: req.body.username,
-                email: req.body.email,
-                password: hashedPass,
+        usersApi.getByEmail(req.body.email)
+            .then(user => {
+                if (user === undefined) return usersApi.getByUsername(req.body.username);
+                else res.status(422).send({
+                    message: 'This email is already registered'
+                });
+                return null;
+            })
+            .then(user => {
+                if (user === undefined) return authApi.register({
+                    username: req.body.username,
+                    email: req.body.email,
+                    password: hashedPass,
+                })
+                else if(user !== null) res.status(422).send({
+                    message: 'This username is already registered'
+                });
             })
             .then(user => {
 
-                const sanitizedUser = {
-                    username: user.username,
-                    email: user.email,
-                    created_at: user.created_at
-                };
+                if (user !== undefined) {
 
-                const token = jwt.sign(sanitizedUser, jwtSecret, {
-                    expiresIn: '1h'
-                });
+                    const sanitizedUser = {
+                        username: user.username,
+                        email: user.email,
+                        created_at: user.created_at
+                    };
 
-                res.status(200).send({
-                    token,
-                    user: sanitizedUser
-                });
+                    const token = jwt.sign(sanitizedUser, jwtSecret, {
+                        expiresIn: '1h'
+                    });
 
+                    res.status(200).send({
+                        token,
+                        user: sanitizedUser
+                    });
+                }
             })
             .catch(err => {
                 res.status(500).send({

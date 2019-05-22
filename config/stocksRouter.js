@@ -16,16 +16,17 @@ router.get('/:ticker', (req, res) => {
             if (stocksApiResponse === undefined) {
                 return dataScienceApi();
             } else if (Date.parse(stocksApiResponse.updated_at) > new Date(Date.now() - 86400 * 1000).getTime()) {
+                const actionThresholds = JSON.parse(stocksApiResponse.data).actionThresholds;
                 res.status(200).send({
                     ticker: req.params.ticker,
-                    actionThresholds: stocksApiResponse.data
+                    actionThresholds 
                 });
             } else {
                 return dataScienceApi();
             }
         })
         .then(apiResponse => {
-            if (apiResponse !== undefined) {
+            if (apiResponse !== undefined && typeof apiResponse.data === 'object') {
                 stocksApi.insert({
                     ticker: req.params.ticker,
                     data: JSON.stringify({actionThresholds: apiResponse.data})
@@ -34,9 +35,14 @@ router.get('/:ticker', (req, res) => {
                     ticker: req.params.ticker,
                     actionThresholds: apiResponse.data
                 });
+            } else if(apiResponse !== undefined && apiResponse.data.contains('Thank you for using Alpha Vantage!')) {
+                res.status(500).send({
+                    message: 'Alpha Vantage Rate Limited'
+                });
             }
         })
         .catch(err => {
+            console.log(err)
             res.status(500).send({
                 message: 'Internal Server Error'
             });
@@ -54,12 +60,15 @@ router.get('/', (req, res) => {
                 updated_at,
                 data
             }) => {
+                
+                const actionThresholds = JSON.parse(data).actionThresholds;
+
                 return {
                     id,
                     ticker,
                     created_at,
                     updated_at,
-                    data
+                    actionThresholds
                 }
             })
 

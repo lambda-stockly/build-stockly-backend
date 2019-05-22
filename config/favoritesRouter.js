@@ -11,9 +11,15 @@ router.get('/', (req, res) => {
             return stocksApi.getAllById(allFavorites.map(fav => fav.stock_id));
         })
         .then(allStocks => {
+            const parsedStocks = allStocks.map(stock=> {
+                const obj = JSON.parse(stock.data);
+                stock.actionThresholds = obj.actionThresholds;
+                delete stock.data;
+                return stock;
+            })
             res
                 .status(200)
-                .send(allStocks);
+                .send(parsedStocks);
         })
         .catch(err => {
             res
@@ -42,12 +48,16 @@ router.post('/', (req, res) => {
                 } else {
                     return dataScienceApi()
                         .then(dataScienceResponse => {
-                            return stocksApi.insert({
-                                ticker: req.body.ticker,
-                                data: JSON.stringify({
-                                    actionThresholds: dataScienceResponse.data
-                                })
-                            });
+                            if(dataScienceResponse !== undefined && apiResponse.data.contains('Thank you for using Alpha Vantage!')) {
+                                throw new Error('Alpha Vantage API Limit Reached')
+                            } else {
+                                return stocksApi.insert({
+                                    ticker: req.body.ticker,
+                                    data: JSON.stringify({
+                                        actionThresholds: dataScienceResponse.data
+                                    })
+                                });
+                            }
                         })
                         .then(response2 => {
                             applicableStock = response2;
@@ -76,9 +86,15 @@ router.post('/', (req, res) => {
             })
             .then(allStocks => {
                 if (allStocks !== undefined) {
+                    const parsedStocks = allStocks.map(stock=> {
+                        const obj = JSON.parse(stock.data);
+                        stock.actionThresholds = obj.actionThresholds;
+                        delete stock.data;
+                        return stock;
+                    })
                     res
                         .status(200)
-                        .send(allStocks);
+                        .send(parsedStocks);
                 }
             })
             .catch(err => {
@@ -111,9 +127,15 @@ router.delete('/', (req, res) => {
                 return stocksApi.getAllById(allFavorites.map(fav => fav.stock_id));
             })
             .then(allStocks => {
+                const parsedStocks = allStocks.map(stock=> {
+                    const obj = JSON.parse(stock.data);
+                    stock.actionThresholds = obj.actionThresholds;
+                    delete stock.data;
+                    return stock;
+                })
                 res
                     .status(200)
-                    .send(allStocks);
+                    .send(parsedStocks);
             })
             .catch(err => {
                 res

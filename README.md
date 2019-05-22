@@ -121,10 +121,46 @@ Authorization: "token from local storage or app state"
 ```
 {
     [
-        "AMZN",
-        "GOOG",
-        "JPM",
-        "AAPL"
+        {
+            "id": 1,
+            "ticker": "AAPL",
+            "created_at": "2019-05-22T03:18:38.011Z",
+            "updated_at": "2019-05-22T03:18:38.011Z",
+            "data": {
+                "actionThresholds": {
+                    "TA": {
+                        "sell": 0.13,
+                        "hold": 0.66,
+                        "buy": 0.21
+                    },
+                    "Sentiment": {
+                        "sell": 0.5,
+                        "hold": 0.25,
+                        "buy": 0.25
+                    }
+                }
+            }
+        },
+        {
+            "id": 2,
+            "ticker": "GOOG",
+            "created_at": "2019-05-22T15:20:05.285Z",
+            "updated_at": "2019-05-22T15:20:05.285Z",
+            "data": {
+                "actionThresholds": {
+                    "TA": {
+                        "sell": 0.13,
+                        "hold": 0.66,
+                        "buy": 0.21
+                    },
+                    "Sentiment": {
+                        "sell": 0.5,
+                        "hold": 0.25,
+                        "buy": 0.25
+                    }
+                }
+            }
+        }
     ]
 }
 ```
@@ -147,10 +183,46 @@ Authorization: "token from local storage or app state"
 ```
 {
     [
-        "AMZN",
-        "GOOG",
-        "JPM",
-        "AAPL"
+        {
+            "id": 1,
+            "ticker": "AAPL",
+            "created_at": "2019-05-22T03:18:38.011Z",
+            "updated_at": "2019-05-22T03:18:38.011Z",
+            "data": {
+                "actionThresholds": {
+                    "TA": {
+                        "sell": 0.13,
+                        "hold": 0.66,
+                        "buy": 0.21
+                    },
+                    "Sentiment": {
+                        "sell": 0.5,
+                        "hold": 0.25,
+                        "buy": 0.25
+                    }
+                }
+            }
+        },
+        {
+            "id": 2,
+            "ticker": "GOOG",
+            "created_at": "2019-05-22T15:20:05.285Z",
+            "updated_at": "2019-05-22T15:20:05.285Z",
+            "data": {
+                "actionThresholds": {
+                    "TA": {
+                        "sell": 0.13,
+                        "hold": 0.66,
+                        "buy": 0.21
+                    },
+                    "Sentiment": {
+                        "sell": 0.5,
+                        "hold": 0.25,
+                        "buy": 0.25
+                    }
+                }
+            }
+        }
     ]
 }
 ```
@@ -173,9 +245,46 @@ Authorization: "token from local storage or app state"
 ```
 {
     [
-        "GOOG",
-        "JPM",
-        "AAPL"
+        {
+            "id": 1,
+            "ticker": "AAPL",
+            "created_at": "2019-05-22T03:18:38.011Z",
+            "updated_at": "2019-05-22T03:18:38.011Z",
+            "data": {
+                "actionThresholds": {
+                    "TA": {
+                        "sell": 0.13,
+                        "hold": 0.66,
+                        "buy": 0.21
+                    },
+                    "Sentiment": {
+                        "sell": 0.5,
+                        "hold": 0.25,
+                        "buy": 0.25
+                    }
+                }
+            }
+        },
+        {
+            "id": 2,
+            "ticker": "GOOG",
+            "created_at": "2019-05-22T15:20:05.285Z",
+            "updated_at": "2019-05-22T15:20:05.285Z",
+            "data": {
+                "actionThresholds": {
+                    "TA": {
+                        "sell": 0.13,
+                        "hold": 0.66,
+                        "buy": 0.21
+                    },
+                    "Sentiment": {
+                        "sell": 0.5,
+                        "hold": 0.25,
+                        "buy": 0.25
+                    }
+                }
+            }
+        }
     ]
 }
 ```
