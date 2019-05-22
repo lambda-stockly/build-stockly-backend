@@ -4,8 +4,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
 const router = express.Router();
-
-const jwtSecret = process.env.JWT_SECRET || 'Need an environment variable for JWT secret'
+const jwtSecret = process.env.JWT_SECRET || 'Need an environment variable for JWT secret';
 
 /*
 POST /auth/login
@@ -37,33 +36,33 @@ router.post('/login', (req, res) => {
     } else {
 
         authApi.login(req.body.email)
-        .then(user => {
-            if (!user || !bcrypt.compareSync(req.body.password, user.password)) {
-                res.status(422).send({
-                    message: 'Invalid credentials'
+            .then(user => {
+                if (!user || !bcrypt.compareSync(req.body.password, user.password)) {
+                    res.status(422).send({
+                        message: 'Invalid credentials'
+                    });
+                } else {
+                    const sanitizedUser = {
+                        username: user.username,
+                        email: user.email,
+                        created_at: user.created_at
+                    };
+
+                    const token = jwt.sign(sanitizedUser, jwtSecret, {
+                        expiresIn: '1h'
+                    });
+
+                    res.status(200).send({
+                        token,
+                        user: sanitizedUser
+                    });
+                }
+            })
+            .catch(err => {
+                res.status(500).send({
+                    message: 'Internal Server Error'
                 });
-            } else {
-                const sanitizedUser = {
-                    username: user.username,
-                    email: user.email,
-                    created_at: user.created_at
-                };
-    
-                const token = jwt.sign(sanitizedUser, jwtSecret, {
-                    expiresIn: '1h'
-                });
-    
-                res.status(200).send({
-                    token,
-                    user: sanitizedUser
-                });
-            }
-        })
-        .catch(err=>{
-            res.status(500).send({
-                message: 'Internal Server Error'
-            });
-        })
+            })
     }
 
 });
@@ -104,36 +103,36 @@ router.post('/register', (req, res) => {
         });
     } else {
 
-        const hashedPass = bcrypt.hashSync(req.body.password,14);
+        const hashedPass = bcrypt.hashSync(req.body.password, 14);
 
         authApi.register({
-            username: req.body.username,
-            email: req.body.email,
-            password: hashedPass,
-        })
-        .then(user => {
+                username: req.body.username,
+                email: req.body.email,
+                password: hashedPass,
+            })
+            .then(user => {
 
-            const sanitizedUser = {
-                username: user.username,
-                email: user.email,
-                created_at: user.created_at
-            };
+                const sanitizedUser = {
+                    username: user.username,
+                    email: user.email,
+                    created_at: user.created_at
+                };
 
-            const token = jwt.sign(sanitizedUser, jwtSecret, {
-                expiresIn: '1h'
+                const token = jwt.sign(sanitizedUser, jwtSecret, {
+                    expiresIn: '1h'
+                });
+
+                res.status(200).send({
+                    token,
+                    user: sanitizedUser
+                });
+
+            })
+            .catch(err => {
+                res.status(500).send({
+                    message: 'Internal Server Error'
+                });
             });
-
-            res.status(200).send({
-                token,
-                user: sanitizedUser
-            });
-
-        })
-        .catch(err=>{
-            res.status(500).send({
-                message: 'Internal Server Error'
-            });
-        });
     }
 });
 

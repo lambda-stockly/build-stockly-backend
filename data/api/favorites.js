@@ -2,8 +2,8 @@ const db = require('../dbConfig');
 
 module.exports = {
     insert,
-    getByUser,
-    delete
+    getByUserId,
+    remove
 }
 
 function insert(payload) {
@@ -12,23 +12,32 @@ function insert(payload) {
         .then(id => {
             return db('favorites')
                 .where({
-                    user_id: favorite.user_id
+                    user_id: payload.user_id
                 });
         });
 }
 
-function getByUser(user_id) {
+function getByUserId(user_id) {
     return db('favorites')
         .where({
             user_id
         });
 }
 
-function delete(user_id,ticker) {
-    return db('users')
+function remove({
+    user_id,
+    stock_id
+}) {
+    return db('favorites')
         .where({
-            user_id,
-            ticker
+            stock_id,
+            user_id
         })
-        .del();
+        .del()
+        .then(() => {
+            return db('favorites')
+                .where({
+                    user_id
+                });
+        })
 }

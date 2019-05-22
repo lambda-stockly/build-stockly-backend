@@ -1,5 +1,5 @@
 const express = require('express');
-const dsApi = require('../data/api/ds');
+const dataScienceApi = require('../data/api/datascience');
 const stocksApi = require('../data/api/stocks');
 const router = express.Router();
 
@@ -14,23 +14,21 @@ router.get('/:ticker', (req, res) => {
     stocksApi.getByTicker(req.params.ticker)
         .then(stocksApiResponse => {
             if (stocksApiResponse === undefined) {
-                return dsApi();
+                return dataScienceApi();
             } else if (Date.parse(stocksApiResponse.updated_at) > new Date(Date.now() - 86400 * 1000).getTime()) {
                 res.status(200).send({
                     ticker: req.params.ticker,
                     actionThresholds: stocksApiResponse.data
                 });
             } else {
-                return dsApi();
+                return dataScienceApi();
             }
         })
         .then(apiResponse => {
             if (apiResponse !== undefined) {
                 stocksApi.insert({
                     ticker: req.params.ticker,
-                    data: JSON.stringify({
-                        actionThresholds: apiResponse.data
-                    })
+                    data: JSON.stringify({actionThresholds: apiResponse.data})
                 });
                 res.status(200).send({
                     ticker: req.params.ticker,
@@ -61,7 +59,7 @@ router.get('/', (req, res) => {
                     ticker,
                     created_at,
                     updated_at,
-                    actionThresholds: data
+                    data
                 }
             })
 
