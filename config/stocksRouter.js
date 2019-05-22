@@ -16,7 +16,7 @@ router.get('/:ticker', (req, res) => {
             if (stocksApiResponse === undefined) {
                 return dataScienceApi();
             } else if (Date.parse(stocksApiResponse.updated_at) > new Date(Date.now() - 86400 * 1000).getTime()) {
-                const actionThresholds = JSON.parse(stocksApiResponse.data).actionThresholds;
+                const actionThresholds = stocksApiResponse.data.actionThresholds;
                 res.status(200).send({
                     ticker: req.params.ticker,
                     actionThresholds 
@@ -61,7 +61,7 @@ router.get('/', (req, res) => {
                 data
             }) => {
                 
-                const actionThresholds = JSON.parse(data).actionThresholds;
+                const actionThresholds = data.actionThresholds;
 
                 return {
                     id,
