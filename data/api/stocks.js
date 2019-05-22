@@ -3,6 +3,7 @@ const db = require('../dbConfig');
 module.exports = {
     insert,
     getAll,
+    getAllById,
     getByTicker,
     update,
 }
@@ -12,15 +13,20 @@ function insert(payload) {
         .insert(payload, 'id')
         .then(id => {
             return db('stocks')
-            .where({
-                id: id[0]
-            })
-            .first();
+                .where({
+                    id: id[0]
+                })
+                .first();
         });
 }
 
 function getAll() {
     return db('stocks');
+}
+
+function getAllById(arrayOfIds) {
+    return db('stocks')
+        .whereIn('id', arrayOfIds)
 }
 
 function getByTicker(ticker) {
@@ -31,7 +37,7 @@ function getByTicker(ticker) {
         .first();
 }
 
-function update(ticker,payload) {
+function update(ticker, payload) {
     return db('users')
         .where({
             ticker

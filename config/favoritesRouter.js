@@ -8,9 +8,12 @@ router.get('/', (req, res) => {
     favoritesApi
         .getByUserId(req.headers.user.id)
         .then(allFavorites => {
+            return stocksApi.getAllById(allFavorites.map(fav => fav.stock_id));
+        })
+        .then(allStocks => {
             res
                 .status(200)
-                .send(allFavorites);
+                .send(allStocks);
         })
         .catch(err => {
             res
@@ -68,9 +71,14 @@ router.post('/', (req, res) => {
             })
             .then(allFavorites => {
                 if (allFavorites !== undefined) {
+                    return stocksApi.getAllById(allFavorites.map(fav => fav.stock_id));
+                }
+            })
+            .then(allStocks => {
+                if (allStocks !== undefined) {
                     res
                         .status(200)
-                        .send(allFavorites);
+                        .send(allStocks);
                 }
             })
             .catch(err => {
@@ -100,9 +108,12 @@ router.delete('/', (req, res) => {
                 });
             })
             .then(allFavorites => {
+                return stocksApi.getAllById(allFavorites.map(fav => fav.stock_id));
+            })
+            .then(allStocks => {
                 res
                     .status(200)
-                    .send(allFavorites);
+                    .send(allStocks);
             })
             .catch(err => {
                 res
