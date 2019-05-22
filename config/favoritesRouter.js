@@ -106,7 +106,7 @@ router.post('/', (req, res) => {
                         if (process.env.DB_ENV === 'development' || process.env.DB_ENV === 'testing') {
                             actionThresholds = JSON.parse(stock.data).actionThresholds;
                         } else {
-                            actionThresholds = data.actionThresholds;
+                            actionThresholds = stock.data.actionThresholds;
                         }
                         stock.actionThresholds = actionThresholds;
                         delete stock.data;
@@ -154,7 +154,7 @@ router.delete('/', (req, res) => {
                     if (process.env.DB_ENV === 'development' || process.env.DB_ENV === 'testing') {
                         actionThresholds = JSON.parse(stock.data).actionThresholds;
                     } else {
-                        actionThresholds = data.actionThresholds;
+                        actionThresholds = stock.data.actionThresholds;
                     }
                     stock.actionThresholds = actionThresholds;
                     delete stock.data;
