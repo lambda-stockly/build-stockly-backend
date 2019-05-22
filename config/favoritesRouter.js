@@ -12,8 +12,7 @@ router.get('/', (req, res) => {
         })
         .then(allStocks => {
             const parsedStocks = allStocks.map(stock=> {
-                const obj = JSON.parse(stock.data);
-                stock.actionThresholds = obj.actionThresholds;
+                stock.actionThresholds = stock.data.actionThresholds;
                 delete stock.data;
                 return stock;
             })
@@ -87,8 +86,7 @@ router.post('/', (req, res) => {
             .then(allStocks => {
                 if (allStocks !== undefined) {
                     const parsedStocks = allStocks.map(stock=> {
-                        const obj = JSON.parse(stock.data);
-                        stock.actionThresholds = obj.actionThresholds;
+                        stock.actionThresholds = stock.data.actionThresholds;
                         delete stock.data;
                         return stock;
                     })
@@ -128,8 +126,7 @@ router.delete('/', (req, res) => {
             })
             .then(allStocks => {
                 const parsedStocks = allStocks.map(stock=> {
-                    const obj = JSON.parse(stock.data);
-                    stock.actionThresholds = obj.actionThresholds;
+                    stock.actionThresholds = stock.data.actionThresholds;
                     delete stock.data;
                     return stock;
                 })
