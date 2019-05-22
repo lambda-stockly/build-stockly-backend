@@ -1,10 +1,12 @@
 const db = require('../dbConfig');
+const stocksApi = require('./stocks');
 
 module.exports = {
     insert,
     getAll,
     getByTicker,
     getByUser,
+    getTopSearched
 }
 
 function insert(payload) {
@@ -12,10 +14,10 @@ function insert(payload) {
         .insert(payload, 'id')
         .then(id => {
             return db('searches')
-            .where({
-                id: id[0]
-            })
-            .first();
+                .where({
+                    id: id[0]
+                })
+                .first();
         });
 }
 
@@ -38,4 +40,36 @@ function getByUser(user_id) {
         .where({
             user_id
         });
+}
+
+function getTopSearched() {
+    return db('searches')
+        .distinct()
+        .pluck('ticker')
+        .then(tickers => {
+
+            const promiseArray = [];
+
+            tickers.forEach(ticker => {
+
+                promiseArray.push(
+                    db('searches')
+                    .where({
+                        ticker
+                    })
+                    .then(result => {
+                        return {
+                            ticker,
+                            count: result.length
+                        }
+                    }));
+            });
+
+            return Promise.all(promiseArray)
+                .then(results => {
+                    return results.sort((a, b) => a.count < b.count).slice(0, 5).map(a => a.ticker);
+                })
+        }).then(tickerArray=> {
+            return stocksApi.getAllByTicker(tickerArray);
+        })
 }

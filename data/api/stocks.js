@@ -4,6 +4,7 @@ module.exports = {
     insert,
     getAll,
     getAllById,
+    getAllByTicker,
     getByTicker,
     update,
 }
@@ -27,6 +28,11 @@ function getAll() {
 function getAllById(arrayOfIds) {
     return db('stocks')
         .whereIn('id', arrayOfIds)
+}
+
+function getAllByTicker(arrayOfTickers) {
+    return db('stocks')
+        .whereIn('ticker', arrayOfTickers)
 }
 
 function getByTicker(ticker) {
