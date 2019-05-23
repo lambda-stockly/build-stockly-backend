@@ -7,13 +7,17 @@ module.exports = {
 
 function register(user) {
     return db('users')
-        .insert(user, 'id')
+        .insert({
+            ...user,
+            created_at: Date.now(),
+            updated_at: Date.now()
+        }, 'id')
         .then(id => {
             return db('users')
-            .where({
-                id: id[0]
-            })
-            .first();
+                .where({
+                    id: id[0]
+                })
+                .first();
         });
 }
 

@@ -11,7 +11,10 @@ module.exports = {
 
 function insert(payload) {
     return db('searches')
-        .insert(payload, 'id')
+        .insert({
+            ...payload,
+            created_at: Date.now()
+        }, 'id')
         .then(id => {
             return db('searches')
                 .where({
@@ -26,6 +29,7 @@ function getAll() {
 }
 
 function getByTicker(ticker) {
+    //tODO: SORT may be broken now that dates are strings???
     return db('searches')
         .where({
             ticker,
@@ -69,7 +73,7 @@ function getTopSearched() {
                 .then(results => {
                     return results.sort((a, b) => a.count < b.count).slice(0, 5).map(a => a.ticker);
                 })
-        }).then(tickerArray=> {
+        }).then(tickerArray => {
             return stocksApi.getAllByTicker(tickerArray);
-        })
+        });
 }

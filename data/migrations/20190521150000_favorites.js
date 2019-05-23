@@ -10,15 +10,15 @@ exports.up = function(knex, Promise) {
         .onDelete('RESTRICT')
         .onUpdate('CASCADE');
 
-    tbl.integer('stock_id')
+    tbl.integer('stock_ticker')
         .notNullable()
-        .references('id')
+        .references('ticker')
         .inTable('stocks')
         .onDelete('RESTRICT')
         .onUpdate('CASCADE');
 
-    tbl.timestamp('created_at')
-        .defaultTo(knex.fn.now());
+    tbl.string('created_at')
+      .notNullable();
   });
 };
 

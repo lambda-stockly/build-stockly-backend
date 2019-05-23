@@ -1,9 +1,10 @@
 const db = require('../dbConfig');
+const knex = require('knex');
 
 module.exports = {
+    deleteByTicker,
     insert,
     getAll,
-    getAllById,
     getAllByTicker,
     getByTicker,
     update,
@@ -11,7 +12,11 @@ module.exports = {
 
 function insert(payload) {
     return db('stocks')
-        .insert(payload, 'id')
+        .insert({
+            ...payload,
+            created_at: Date.now(),
+            updated_at: Date.now()
+        }, 'id')
         .then(id => {
             return db('stocks')
                 .where({
@@ -23,11 +28,6 @@ function insert(payload) {
 
 function getAll() {
     return db('stocks');
-}
-
-function getAllById(arrayOfIds) {
-    return db('stocks')
-        .whereIn('id', arrayOfIds)
 }
 
 function getAllByTicker(arrayOfTickers) {
@@ -43,11 +43,21 @@ function getByTicker(ticker) {
         .first();
 }
 
-function update(ticker, payload) {
-    return db('users')
+function deleteByTicker(ticker) {
+    return db('stocks')
         .where({
             ticker
         })
-        .update(payload)
-        .first();
+        .delete();
+}
+
+function update(ticker, payload) {
+    return db('stocks')
+        .where({
+            ticker
+        })
+        .update({
+            ...payload,
+            updated_at: Date.now()
+        })
 }

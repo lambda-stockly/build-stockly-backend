@@ -12,8 +12,8 @@ exports.up = function (knex, Promise) {
         tbl.string('ticker', 32)
             .notNullable();
 
-        tbl.timestamp('created_at')
-            .defaultTo(knex.fn.now());
+        tbl.string('created_at')
+            .notNullable();
 
         tbl.boolean('new_response');
 
