@@ -10,9 +10,9 @@ exports.up = function(knex, Promise) {
         .onDelete('RESTRICT')
         .onUpdate('CASCADE');
 
-    tbl.integer('stock_ticker')
+    tbl.integer('stock_id')
         .notNullable()
-        .references('ticker')
+        .references('id')
         .inTable('stocks')
         .onDelete('RESTRICT')
         .onUpdate('CASCADE');

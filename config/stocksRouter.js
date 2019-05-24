@@ -16,8 +16,6 @@ router.get('/:ticker', (req, res) => {
     stocksApi.getByTicker(req.params.ticker)
         .then(stocksApiResponse => {
 
-            console.log(stocksApiResponse)
-
             //If the stock is not in the stocks table then insert it
             if (stocksApiResponse === undefined) {
                 stocksApi.insert({
@@ -31,7 +29,7 @@ router.get('/:ticker', (req, res) => {
 
             //Else the stock is in the stocks table already
             //See if the cached data is more than 24 hours old
-            else if (stocksApiResponse.updated_at > new Date(Date.now() - 86400 * 1000).getTime()) {
+            else if (stocksApiResponse.data !== null && stocksApiResponse.updated_at > new Date(Date.now() - 86400 * 1000).getTime()) {
 
                 //The following code is necessary because of differences in SQLITE and Postgres
                 //Postgres will break if JSON.parse is used, and Sqlite will break if it's not used
@@ -42,18 +40,18 @@ router.get('/:ticker', (req, res) => {
                     actionThresholds = stocksApiResponse.data;
                 }
 
-                //Send the cached data response to the client
-                res.status(200).send({
-                    ticker: req.params.ticker,
-                    actionThresholds
-                });
-
                 //Update the searches table
                 searchesApi.insert({
                     user_id: req.headers.user.id,
                     ticker: req.params.ticker,
                     new_response: 0,
                     response: JSON.stringify(actionThresholds)
+                }).then(_ => {
+                    //Send the cached data response to the client
+                    res.status(200).send({
+                        ticker: req.params.ticker,
+                        actionThresholds
+                    });
                 })
 
                 //The undefined variable is automatically returned
@@ -74,44 +72,50 @@ router.get('/:ticker', (req, res) => {
             //If apiResponse.data is not an object, then the alpha vantage API limits have been reached.
             if (apiResponse !== undefined && typeof apiResponse.data === 'object') {
 
-                stocksApi.deleteByTicker(req.params.ticker);
-
                 //Update the stocks table with the response from data science
-                stocksApi.insert({
-                    ticker: req.params.ticker,
-                    data: JSON.stringify({
-                        actionThresholds: apiResponse.data
-                    })
-                });
+                const update = stocksApi.update(
+                    req.params.ticker, {
+                        data: JSON.stringify(apiResponse.data)
+                    });
 
                 //Insert the search into the search table
-                searchesApi.insert({
+                const search = searchesApi.insert({
                     user_id: req.headers.user.id,
                     ticker: req.params.ticker,
                     new_response: 1,
                     response: JSON.stringify(apiResponse.data)
                 });
 
-                //Send response
-                res.status(200).send({
-                    ticker: req.params.ticker,
-                    actionThresholds: apiResponse.data
-                });
+                Promise.all([update, search]).then(result => {
+                    return stocksApi.getById(result[0]);
+                }).then(stockData => {
 
+                    //The following code is necessary because of differences in SQLITE and Postgres
+                    //Postgres will break if JSON.parse is used, and Sqlite will break if it's not used
+                    let actionThresholds;
+                    if (process.env.DB_ENV === 'development' || process.env.DB_ENV === 'testing') {
+                        actionThresholds = JSON.parse(stockData.data);
+                    } else {
+                        actionThresholds = stockData.data;
+                    }
+
+                    res.status(200).send({
+                        ticker: req.params.ticker,
+                        actionThresholds
+                    });
+                })
             }
 
-            //If the response is not undefined
+            //If the response is not undefined and not an object
             //Then the alpha vantage API limits have probably been reached
             //Send error to the client
             else if (apiResponse !== undefined) {
-                console.log(apiResponse)
                 res.status(500).send({
                     message: 'Alpha Vantage Rate Limited'
                 });
             }
         })
         .catch(err => {
-            console.log(err)
             res.status(500).send({
                 message: 'Internal Server Error'
             });

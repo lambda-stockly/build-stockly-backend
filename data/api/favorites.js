@@ -29,11 +29,11 @@ function getByUserId(user_id) {
 
 function remove({
     user_id,
-    stock_ticker
+    stock_id
 }) {
     return db('favorites')
         .where({
-            stock_ticker,
+            stock_id,
             user_id
         })
         .del()

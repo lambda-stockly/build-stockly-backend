@@ -5,8 +5,10 @@ module.exports = {
     deleteByTicker,
     insert,
     getAll,
+    getAllById,
     getAllByTicker,
     getByTicker,
+    getById,
     update,
 }
 
@@ -30,6 +32,11 @@ function getAll() {
     return db('stocks');
 }
 
+function getAllById(arrayOfIds) {
+    return db('stocks')
+        .whereIn('id', arrayOfIds)
+}
+
 function getAllByTicker(arrayOfTickers) {
     return db('stocks')
         .whereIn('ticker', arrayOfTickers)
@@ -43,12 +50,20 @@ function getByTicker(ticker) {
         .first();
 }
 
+function getById(id) {
+    return db('stocks')
+        .where({
+            id
+        })
+        .first();
+}
+
 function deleteByTicker(ticker) {
     return db('stocks')
         .where({
             ticker
         })
-        .delete();
+        .del();
 }
 
 function update(ticker, payload) {
@@ -59,5 +74,5 @@ function update(ticker, payload) {
         .update({
             ...payload,
             updated_at: Date.now()
-        })
+        });
 }

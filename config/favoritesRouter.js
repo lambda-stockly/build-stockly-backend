@@ -9,9 +9,11 @@ router.get('/', (req, res) => {
     favoritesApi
         .getByUserId(req.headers.user.id)
         .then(allFavorites => {
-            return stocksApi.getAllByTicker(allFavorites.map(fav => fav.stock_ticker));
+            console.log(allFavorites)
+            return stocksApi.getAllById(allFavorites.map(fav => fav.stock_id));
         })
         .then(allStocks => {
+            console.log(allStocks)
             const parsedStocks = allStocks.map(stock => {
 
                 let actionThresholds;
@@ -30,6 +32,7 @@ router.get('/', (req, res) => {
                 .send(parsedStocks);
         })
         .catch(err => {
+            console.log(err)
             res
                 .status(500)
                 .send({
@@ -108,7 +111,7 @@ router.post('/', (req, res) => {
             .then(allFavorites => {
 
                 //See if this stock is already in the user's favorites
-                if (allFavorites.find(stock => stock.stock_ticker === applicableStock.id)) {
+                if (allFavorites.find(stock => stock.stock_id === applicableStock.id)) {
                     res
                         .status(422)
                         .send({
@@ -122,7 +125,7 @@ router.post('/', (req, res) => {
                     //Otherwise, insert it into the favorites 
                     return favoritesApi.insert({
                         user_id: req.headers.user.id,
-                        stock_ticker: applicableStock.id
+                        stock_id: applicableStock.id
                     });
                 }
             })
@@ -130,7 +133,7 @@ router.post('/', (req, res) => {
 
                 //If allFavorites is undefined then the user already added this stock to their favorites
                 if (allFavorites !== undefined) {
-                    return stocksApi.getAllByTicker(allFavorites.map(fav => fav.stock_ticker));
+                    return stocksApi.getAllById(allFavorites.map(fav => fav.stock_id));
                 }
             })
             .then(allStocks => {
@@ -158,6 +161,7 @@ router.post('/', (req, res) => {
                 }
             })
             .catch(err => {
+                console.log(err)
                 res
                     .status(500)
                     .send({
@@ -184,13 +188,13 @@ router.delete('/', (req, res) => {
                 //Use the stock's id to remove it from favorites
                 return favoritesApi.remove({
                     user_id: req.headers.user.id,
-                    stock_ticker: applicableStock.ticker
+                    stock_id: applicableStock.id
                 });
             })
             .then(allFavorites => {
                 
                 //Get all of the new favorites by ID
-                return stocksApi.getAllByTicker(allFavorites.map(fav => fav.stock_ticker));
+                return stocksApi.getAllById(allFavorites.map(fav => fav.stock_id));
             })
             .then(allStocks => {
 
