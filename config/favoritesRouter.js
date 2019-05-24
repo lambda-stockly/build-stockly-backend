@@ -18,9 +18,9 @@ router.get('/', (req, res) => {
 
                 let actionThresholds;
                 if (process.env.DB_ENV === 'development' || process.env.DB_ENV === 'testing') {
-                    actionThresholds = JSON.parse(stock.data).actionThresholds;
+                    actionThresholds = JSON.parse(stock.data);
                 } else {
-                    actionThresholds = stock.data.actionThresholds;
+                    actionThresholds = stock.data;
                 }
 
                 stock.actionThresholds = actionThresholds;
@@ -88,9 +88,7 @@ router.post('/', (req, res) => {
                                             //Update the stocks table with the data science response
                                             return stocksApi.update(
                                                 req.body.ticker, {
-                                                    data: JSON.stringify({
-                                                        actionThresholds: dataScienceResponse.data
-                                                    })
+                                                    data: JSON.stringify(dataScienceResponse.data)
                                                 }
                                             ).then(updatedId => {
                                                 return stocksApi.getByTicker(req.body.ticker);
@@ -166,9 +164,9 @@ router.post('/', (req, res) => {
 
                         let actionThresholds;
                         if (process.env.DB_ENV === 'development' || process.env.DB_ENV === 'testing') {
-                            actionThresholds = JSON.parse(stock.data).actionThresholds;
+                            actionThresholds = JSON.parse(stock.data);
                         } else {
-                            actionThresholds = stock.data.actionThresholds;
+                            actionThresholds = stock.data;
                         }
                         stock.actionThresholds = actionThresholds;
                         delete stock.data;
@@ -223,9 +221,9 @@ router.delete('/', (req, res) => {
 
                     let actionThresholds;
                     if (process.env.DB_ENV === 'development' || process.env.DB_ENV === 'testing') {
-                        actionThresholds = JSON.parse(stock.data).actionThresholds;
+                        actionThresholds = JSON.parse(stock.data);
                     } else {
-                        actionThresholds = stock.data.actionThresholds;
+                        actionThresholds = stock.data;
                     }
                     stock.actionThresholds = actionThresholds;
                     delete stock.data;
