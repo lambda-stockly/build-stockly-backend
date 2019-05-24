@@ -8,7 +8,10 @@ module.exports = {
 
 function insert(payload) {
     return db('favorites')
-        .insert(payload, 'id')
+        .insert({
+            ...payload,
+            created_at: Date.now()
+        }, 'id')
         .then(id => {
             return db('favorites')
                 .where({

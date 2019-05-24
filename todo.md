@@ -1,0 +1,3 @@
+- Some stocks are taking a long time to load even when their data should already be cached. IE. AAPL
+- When adding a stock to the DB, the lag time from the DS API can allow the same stock to be added multiple times to the favorites list and/or stocks table
+- Duplicates showing up in top searched

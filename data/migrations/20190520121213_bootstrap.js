@@ -13,11 +13,11 @@ exports.up = function (knex, Promise) {
         tbl.string('password', 254)
             .notNullable();
 
-        tbl.timestamp('created_at')
-            .defaultTo(knex.fn.now());
+        tbl.string('created_at')
+            .notNullable();
 
-        tbl.timestamp('updated_at')
-            .defaultTo(knex.fn.now());
+        tbl.string('updated_at')
+            .notNullable();
     });
 };
 

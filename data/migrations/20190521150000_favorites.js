@@ -17,8 +17,8 @@ exports.up = function(knex, Promise) {
         .onDelete('RESTRICT')
         .onUpdate('CASCADE');
 
-    tbl.timestamp('created_at')
-        .defaultTo(knex.fn.now());
+    tbl.string('created_at')
+      .notNullable();
   });
 };
 

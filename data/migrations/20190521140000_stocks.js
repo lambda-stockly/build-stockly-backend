@@ -5,13 +5,14 @@ exports.up = function (knex, Promise) {
         tbl.string('ticker', 32)
             .notNullable();
 
-        tbl.timestamp('created_at')
-            .defaultTo(knex.fn.now());
+        tbl.string('created_at')
+            .notNullable();
 
-        tbl.timestamp('updated_at')
-            .defaultTo(knex.fn.now());
+        tbl.string('updated_at')
+            .notNullable();
 
-        tbl.json('data').nullable();
+        tbl.json('data')
+            .nullable();
     });
 };
 

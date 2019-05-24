@@ -12,48 +12,104 @@ router.get('/:ticker', (req, res) => {
         });
     }
 
+    //See if the stock is already in the stocks table
     stocksApi.getByTicker(req.params.ticker)
         .then(stocksApiResponse => {
+
+            //If the stock is not in the stocks table then insert it
             if (stocksApiResponse === undefined) {
-                return dataScienceApi();
-            } else if (Date.parse(stocksApiResponse.updated_at) > new Date(Date.now() - 86400 * 1000).getTime()) {
-                let actionThresholds;                
-                if(process.env.DB_ENV === 'development' || process.env.DB_ENV === 'testing') {
-                    actionThresholds = JSON.parse(stocksApiResponse.data).actionThresholds;
-                } else {
-                    actionThresholds = stocksApiResponse.data.actionThresholds;
-                }
-                res.status(200).send({
-                    ticker: req.params.ticker,
-                    actionThresholds 
+                stocksApi.insert({
+                    ticker: req.params.ticker
                 });
+
+                //Request data from data science API
+                return dataScienceApi(req.params.ticker);
+
+            }
+
+            //Else the stock is in the stocks table already
+            //See if the cached data is more than 24 hours old
+            else if (stocksApiResponse.data !== null && stocksApiResponse.updated_at > new Date(Date.now() - 86400 * 1000).getTime()) {
+
+                //The following code is necessary because of differences in SQLITE and Postgres
+                //Postgres will break if JSON.parse is used, and Sqlite will break if it's not used
+                let actionThresholds;
+                if (process.env.DB_ENV === 'development' || process.env.DB_ENV === 'testing') {
+                    actionThresholds = JSON.parse(stocksApiResponse.data);
+                } else {
+                    actionThresholds = stocksApiResponse.data;
+                }
+
+                //Update the searches table
                 searchesApi.insert({
                     user_id: req.headers.user.id,
                     ticker: req.params.ticker,
                     new_response: 0,
                     response: JSON.stringify(actionThresholds)
+                }).then(_ => {
+                    //Send the cached data response to the client
+                    res.status(200).send({
+                        ticker: req.params.ticker,
+                        actionThresholds
+                    });
                 })
+
+                //The undefined variable is automatically returned
+                //It will ensure the rest of the .then() chain is skipped
+                //Since cached data was server to the client it is all unnecessary
+                return undefined;
+
             } else {
-                return dataScienceApi();
+
+                //Else the stock is in the database but the cached data is older than 24 hours
+                //Return the data science API response
+                return dataScienceApi(req.params.ticker);
             }
         })
         .then(apiResponse => {
+
+            //The response will be undefined if cached data was already returned to the client
+            //If apiResponse.data is not an object, then the alpha vantage API limits have been reached.
             if (apiResponse !== undefined && typeof apiResponse.data === 'object') {
-                stocksApi.insert({
-                    ticker: req.params.ticker,
-                    data: JSON.stringify({actionThresholds: apiResponse.data})
-                });
-                searchesApi.insert({
+
+                //Update the stocks table with the response from data science
+                const update = stocksApi.update(
+                    req.params.ticker, {
+                        data: JSON.stringify(apiResponse.data)
+                    });
+
+                //Insert the search into the search table
+                const search = searchesApi.insert({
                     user_id: req.headers.user.id,
                     ticker: req.params.ticker,
                     new_response: 1,
                     response: JSON.stringify(apiResponse.data)
                 });
-                res.status(200).send({
-                    ticker: req.params.ticker,
-                    actionThresholds: apiResponse.data
-                });
-            } else if(apiResponse !== undefined && apiResponse.data.contains('Thank you for using Alpha Vantage!')) {
+
+                Promise.all([update, search]).then(result => {
+                    return stocksApi.getById(result[0]);
+                }).then(stockData => {
+
+                    //The following code is necessary because of differences in SQLITE and Postgres
+                    //Postgres will break if JSON.parse is used, and Sqlite will break if it's not used
+                    let actionThresholds;
+                    if (process.env.DB_ENV === 'development' || process.env.DB_ENV === 'testing') {
+                        actionThresholds = JSON.parse(stockData.data);
+                    } else {
+                        actionThresholds = stockData.data;
+                    }
+
+                    res.status(200).send({
+                        ticker: req.params.ticker,
+                        actionThresholds
+                    });
+                })
+            }
+
+            //If the response is not undefined and not an object
+            //Then the alpha vantage API limits have probably been reached
+            //Send error to the client
+            else if (apiResponse !== undefined) {
                 res.status(500).send({
                     message: 'Alpha Vantage Rate Limited'
                 });
@@ -77,12 +133,14 @@ router.get('/', (req, res) => {
                 updated_at,
                 data
             }) => {
-                
-                let actionThresholds;                
-                if(process.env.DB_ENV === 'development' || process.env.DB_ENV === 'testing') {
-                    actionThresholds = JSON.parse(data).actionThresholds;
+
+                //The following code is necessary because of differences in SQLITE and Postgres
+                //Postgres will break if JSON.parse is used, and Sqlite will break if it's not used
+                let actionThresholds;
+                if (process.env.DB_ENV === 'development' || process.env.DB_ENV === 'testing') {
+                    actionThresholds = JSON.parse(data);
                 } else {
-                    actionThresholds = data.actionThresholds;
+                    actionThresholds = data;
                 }
 
                 return {
@@ -97,6 +155,7 @@ router.get('/', (req, res) => {
             res.status(200).send(responseWithParsedJSON);
         })
         .catch(err => {
+            console.log(err)
             res.status(500).send({
                 message: 'Internal Server Error'
             });

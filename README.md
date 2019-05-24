@@ -126,8 +126,8 @@ Authorization: "token from local storage or app state"
         {
             "id": 1,
             "ticker": "AAPL",
-            "created_at": "2019-05-22T03:18:38.011Z",
-            "updated_at": "2019-05-22T03:18:38.011Z",
+            "created_at": "1519211809934",
+            "updated_at": "1519211809934",
             "data": {
                 "actionThresholds": {
                     "TA": {
@@ -169,8 +169,8 @@ Authorization: "token from local storage or app state"
         {
             "id": 1,
             "ticker": "AAPL",
-            "created_at": "2019-05-22T03:18:38.011Z",
-            "updated_at": "2019-05-22T03:18:38.011Z",
+            "created_at": "1519211809934",
+            "updated_at": "1519211809934",
             "data": {
                 "actionThresholds": {
                     "TA": {
@@ -212,8 +212,8 @@ Authorization: "token from local storage or app state"
         {
             "id": 1,
             "ticker": "AAPL",
-            "created_at": "2019-05-22T03:18:38.011Z",
-            "updated_at": "2019-05-22T03:18:38.011Z",
+            "created_at": "1519211809934",
+            "updated_at": "1519211809934",
             "data": {
                 "actionThresholds": {
                     "TA": {
@@ -250,8 +250,8 @@ Authorization: "token from local storage or app state"
         {
             id: 1,
             ticker: "AMZN",
-            created_at: "2019-05-21 21:33:28",
-            updated_at: "2019-05-21 21:33:28",
+            created_at: "1519211809934",
+            updated_at: "1519211809934",
             data: {
                 actionThresholds: {
                     TA: {
@@ -318,8 +318,8 @@ Authorization: "token from local storage or app state"
             "rank": 1,
             "id": 1,
             "ticker": "AAPL",
-            "created_at": "2019-05-22 01:13:33",
-            "updated_at": "2019-05-22 01:13:33",
+            "created_at": "1519211809934",
+            "updated_at": "1519211809934",
             "actionThresholds": {
                 "TA": {
                     "sell": 0.13,

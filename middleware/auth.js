@@ -13,9 +13,9 @@ module.exports = (req, res, next) => {
         if (decodedToken.email !== undefined) {
             usersApi.getByEmail(decodedToken.email)
                 .then(userApiResponse => {
-                    if (userApiResponse.email !== undefined && decodedToken.email === userApiResponse.email) {
+                    if (userApiResponse !== undefined && userApiResponse.email !== undefined && decodedToken.email !== undefined && decodedToken.email === userApiResponse.email) {
                         req.headers.user = userApiResponse;
-                        next()
+                        next();
                     } else {
                         res.status(422).send({
                             message: 'Invalid Credentials'
