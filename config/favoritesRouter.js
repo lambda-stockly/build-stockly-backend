@@ -62,71 +62,89 @@ router.post('/', (req, res) => {
 
                     //Get all of the user's favorites
                     return favoritesApi.getByUserId(req.headers.user.id);
+
                 } else {
 
                     //Insert the ticker into stocks to avoid duplicates
-                    stocksApi.insert({
-                        ticker: req.params.ticker
-                    });
+                    return stocksApi.insert({
+                        ticker: req.body.ticker
+                    }).then(_ => {
 
-                    return dataScienceApi(req.body.ticker)
-                        .then(dataScienceResponse => {
+                        return dataScienceApi(req.body.ticker)
+                            .then(dataScienceResponse => {
 
-                            //See if the API is rate limited
-                            if (dataScienceResponse !== undefined && typeof dataScienceResponse.data !== 'object') {
-                                throw new Error('Alpha Vantage API Limit Reached')
-                            }
-                            
-                            //Else, data science returned a proper answer
-                            else {
+                                //See if the API returned a proper answer
+                                if (dataScienceResponse !== undefined && typeof dataScienceResponse.data === 'object') {
 
-                                //Update the searches table
-                                searchesApi.insert({
-                                    user_id: req.headers.user.id,
-                                    ticker: req.body.ticker,
-                                    new_response: 1,
-                                    response: JSON.stringify(dataScienceResponse.data)
-                                });
-
-                                //Update the stocks table with the data science response
-                                return stocksApi.update(
-                                    req.body.ticker, {
-                                        data: JSON.stringify({
-                                            actionThresholds: dataScienceResponse.data
+                                    //Update the searches table
+                                    return searchesApi.insert({
+                                            user_id: req.headers.user.id,
+                                            ticker: req.body.ticker,
+                                            new_response: 1,
+                                            response: JSON.stringify(dataScienceResponse.data)
                                         })
-                                    }
-                                );
-                            }
-                        })
-                        .then(response2 => {
-                            
-                            //Save the applicable stock for later
-                            applicableStock = response2[0];
-                            
-                            //Get the user's favorites
-                            return favoritesApi.getByUserId(req.headers.user.id);
-                        });
+                                        .then(_ => {
+
+                                            //Update the stocks table with the data science response
+                                            return stocksApi.update(
+                                                req.body.ticker, {
+                                                    data: JSON.stringify({
+                                                        actionThresholds: dataScienceResponse.data
+                                                    })
+                                                }
+                                            ).then(updatedId => {
+                                                return stocksApi.getByTicker(req.body.ticker);
+                                            });
+                                        });
+                                }
+
+                                //Else, data science returned a proper answer
+                                else {
+                                    res.status(500).send({
+                                        message: 'Alpha Vantage Rate Limited'
+                                    });
+                                    return undefined;
+                                }
+                            })
+                            .then(response2 => {
+                                if (response2 !== undefined) {
+
+                                    //Save the applicable stock for later
+                                    applicableStock = response2;
+
+                                    //Get the user's favorites
+                                    return favoritesApi.getByUserId(req.headers.user.id);
+                                }
+                            });
+
+                    })
                 }
             })
             .then(allFavorites => {
 
-                //See if this stock is already in the user's favorites
-                if (allFavorites.find(stock => stock.stock_id === applicableStock.id)) {
-                    res
-                        .status(422)
-                        .send({
-                            message: 'This stock has already been added to favorites'
-                        });
+                if (allFavorites !== undefined) {
+
+                    
+                    console.log('allFavorites',allFavorites, applicableStock.id)
+
+                    //See if this stock is already in the user's favorites
+                    if (allFavorites.find(stock => stock.stock_id === applicableStock.id)) {
+                        res
+                            .status(422)
+                            .send({
+                                message: 'This stock has already been added to favorites'
+                            });
 
                         //Undefined is return so the rest of the .then() chain doesn't run
                         return undefined;
-                } else {
+                    } else {
 
-                    //Otherwise, insert it into the favorites 
-                    return favoritesApi.insert({
-                        user_id: req.headers.user.id,
-                        stock_id: applicableStock.id
-                    });
+                        //Otherwise, insert it into the favorites 
+                        return favoritesApi.insert({
+                            user_id: req.headers.user.id,
+                            stock_id: applicableStock.id
+                        });
+                    }
                 }
             })
             .then(allFavorites => {
@@ -143,6 +161,8 @@ router.post('/', (req, res) => {
 
                     //Parse the response (an array of objects) to match common response format
                     const parsedStocks = allStocks.map(stock => {
+
+                        console.log('stock',stock)
 
                         let actionThresholds;
                         if (process.env.DB_ENV === 'development' || process.env.DB_ENV === 'testing') {
@@ -192,7 +212,7 @@ router.delete('/', (req, res) => {
                 });
             })
             .then(allFavorites => {
-                
+
                 //Get all of the new favorites by ID
                 return stocksApi.getAllById(allFavorites.map(fav => fav.stock_id));
             })

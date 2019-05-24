@@ -18,13 +18,13 @@ router.get('/:ticker', (req, res) => {
 
             //If the stock is not in the stocks table then insert it
             if (stocksApiResponse === undefined) {
-                stocksApi.insert({
+
+                return stocksApi.insert({
                     ticker: req.params.ticker
+                }).then(_ => {                    
+                    //Request data from data science API
+                    return dataScienceApi(req.params.ticker);
                 });
-
-                //Request data from data science API
-                return dataScienceApi(req.params.ticker);
-
             }
 
             //Else the stock is in the stocks table already
@@ -116,6 +116,7 @@ router.get('/:ticker', (req, res) => {
             }
         })
         .catch(err => {
+            console.log(err)
             res.status(500).send({
                 message: 'Internal Server Error'
             });

@@ -29,7 +29,6 @@ function getAll() {
 }
 
 function getByTicker(ticker) {
-    //tODO: SORT may be broken now that dates are strings???
     return db('searches')
         .where({
             ticker,
@@ -67,7 +66,7 @@ function getTopSearched() {
 
                     stock.actionThresholds = actionThresholds;
                     delete stockFromDb.data;
-                    
+
                     return {
                         rank: rank+1,
                         ...stock,
