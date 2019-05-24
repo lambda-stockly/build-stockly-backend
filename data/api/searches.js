@@ -48,32 +48,36 @@ function getByUser(user_id) {
 
 function getTopSearched() {
     return db('searches')
-        .distinct()
-        .pluck('ticker')
-        .then(tickers => {
+        .select('ticker')
+        .count('ticker as number_of_searches')
+        .groupBy('ticker')
+        .orderBy('number_of_searches', 'desc')
+        .limit(5)
+        .then(topFive => {
+            const allStocks = topFive.map((stock,rank) => {
 
-            const promiseArray = [];
+                return stocksApi.getByTicker(stock.ticker).then(stockFromDb => {
 
-            tickers.forEach(ticker => {
+                    let actionThresholds;
+                    if (process.env.DB_ENV === 'development' || process.env.DB_ENV === 'testing') {
+                        actionThresholds = JSON.parse(stockFromDb.data);
+                    } else {
+                        actionThresholds = stockFromDb.data;
+                    }
 
-                promiseArray.push(
-                    db('searches')
-                    .where({
-                        ticker
-                    })
-                    .then(result => {
-                        return {
-                            ticker,
-                            count: result.length
-                        }
-                    }));
+                    stock.actionThresholds = actionThresholds;
+                    delete stockFromDb.data;
+                    
+                    return {
+                        rank: rank+1,
+                        ...stock,
+                        actionThresholds: stockFromDb.actionThresholds,
+                        created_at: stockFromDb.created_at,
+                        updated_at: stockFromDb                   
+                    };
+                })
             });
 
-            return Promise.all(promiseArray)
-                .then(results => {
-                    return results.sort((a, b) => a.count < b.count).slice(0, 5).map(a => a.ticker);
-                })
-        }).then(tickerArray => {
-            return stocksApi.getAllByTicker(tickerArray);
+            return Promise.all(allStocks);
         });
 }

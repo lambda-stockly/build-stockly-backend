@@ -316,21 +316,14 @@ Authorization: "token from local storage or app state"
     [
         {
             "rank": 1,
-            "id": 1,
-            "ticker": "AAPL",
-            "created_at": "1519211809934",
-            "updated_at": "1519211809934",
-            "actionThresholds": {
-                "TA": {
-                    "sell": 0.13,
-                    "hold": 0.66,
-                    "buy": 0.21
-                },
-                "Sentiment": {
-                    "sell": 0.5,
-                    "hold": 0.25,
-                    "buy": 0.25
-                }
+            "ticker": "B",
+            "number_of_searches": 25,
+            "created_at": "1558663802271.0",
+            "updated_at": {
+                "id": 6,
+                "ticker": "B",
+                "created_at": "1558663802271.0",
+                "updated_at": "1558663818489.0"
             }
         },
         ...
