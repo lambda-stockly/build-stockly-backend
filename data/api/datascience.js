@@ -1,5 +1,5 @@
 const axios = require('axios');
-module.exports = ticker => axios.post(`https://dsstockly.herokuapp.com/api?ticker=${ticker}`);
+module.exports = ticker => axios.post(`http://ds-is-okay-iguess.herokuapp.com/api?ticker=${ticker}`);
 
     // Can be used if data science API is down
     // Promise.resolve({
