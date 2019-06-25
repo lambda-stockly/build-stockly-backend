@@ -65,6 +65,7 @@ router.get('/:ticker', (req, res) => {
         })
         .then(apiResponse => {
 
+            
             //The response will be undefined if cached data was already returned to the client
             //If apiResponse.data is not an object, then the alpha vantage API limits have been reached.
             if (apiResponse !== undefined && typeof apiResponse.data === 'object') {
@@ -84,14 +85,16 @@ router.get('/:ticker', (req, res) => {
                 });
 
                 //Wait for both promises to resolve
-                Promise.all([update, search]).then(result => {
+                Promise.all([update, search]).then(_ => {
 
-                    //Then get the applicable stock
-                    return stocksApi.getById(result[0]);
+                    //Then get the applicable stock's updated row
+                    return stocksApi.getByTicker(req.params.ticker);
+
                 }).then(({
                     data
                 }) => {
 
+                    
                     //parseJson() is necessary because of differences in SQLITE and Postgres
                     //Postgres will break if JSON.parse is used, and Sqlite will break if it's not used
                     const actionThresholds = parseJson(data);
