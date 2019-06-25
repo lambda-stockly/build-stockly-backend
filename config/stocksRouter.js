@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.get('/:ticker', (req, res) => {
 
+    //Ensure a ticker was provided
     if (req.params.ticker === undefined || req.params.ticker.trim().length === 0) {
         res.status(400).send({
             message: 'Please provide a ticker'
@@ -21,7 +22,7 @@ router.get('/:ticker', (req, res) => {
 
                 return stocksApi.insert({
                     ticker: req.params.ticker
-                }).then(_ => {                    
+                }).then(_ => {
                     //Request data from data science API
                     return dataScienceApi(req.params.ticker);
                 });
@@ -31,14 +32,9 @@ router.get('/:ticker', (req, res) => {
             //See if the cached data is more than 24 hours old
             else if (stocksApiResponse.data !== null && stocksApiResponse.updated_at > new Date(Date.now() - 86400 * 1000).getTime()) {
 
-                //The following code is necessary because of differences in SQLITE and Postgres
+                //parseJson() is necessary because of differences in SQLITE and Postgres
                 //Postgres will break if JSON.parse is used, and Sqlite will break if it's not used
-                let actionThresholds;
-                if (process.env.DB_ENV === 'development' || process.env.DB_ENV === 'testing') {
-                    actionThresholds = JSON.parse(stocksApiResponse.data);
-                } else {
-                    actionThresholds = stocksApiResponse.data;
-                }
+                const actionThresholds = parseJson(stocksApiResponse.data)
 
                 //Update the searches table
                 searchesApi.insert({
@@ -47,6 +43,7 @@ router.get('/:ticker', (req, res) => {
                     new_response: 0,
                     response: JSON.stringify(actionThresholds)
                 }).then(_ => {
+
                     //Send the cached data response to the client
                     res.status(200).send({
                         ticker: req.params.ticker,
@@ -86,18 +83,18 @@ router.get('/:ticker', (req, res) => {
                     response: JSON.stringify(apiResponse.data)
                 });
 
+                //Wait for both promises to resolve
                 Promise.all([update, search]).then(result => {
-                    return stocksApi.getById(result[0]);
-                }).then(stockData => {
 
-                    //The following code is necessary because of differences in SQLITE and Postgres
+                    //Then get the applicable stock
+                    return stocksApi.getById(result[0]);
+                }).then(({
+                    data
+                }) => {
+
+                    //parseJson() is necessary because of differences in SQLITE and Postgres
                     //Postgres will break if JSON.parse is used, and Sqlite will break if it's not used
-                    let actionThresholds;
-                    if (process.env.DB_ENV === 'development' || process.env.DB_ENV === 'testing') {
-                        actionThresholds = JSON.parse(stockData.data);
-                    } else {
-                        actionThresholds = stockData.data;
-                    }
+                    const actionThresholds = parseJson(data);
 
                     res.status(200).send({
                         ticker: req.params.ticker,
@@ -116,7 +113,7 @@ router.get('/:ticker', (req, res) => {
             }
         })
         .catch(err => {
-            console.log(err)
+            console.log(err);
             res.status(500).send({
                 message: 'Internal Server Error'
             });
@@ -125,8 +122,11 @@ router.get('/:ticker', (req, res) => {
 
 router.get('/', (req, res) => {
 
+    //Get all stocks
     stocksApi.getAll()
         .then(stocksApiResponse => {
+
+            //Map over each and parse if necessary
             const responseWithParsedJSON = stocksApiResponse.map(({
                 id,
                 ticker,
@@ -135,14 +135,9 @@ router.get('/', (req, res) => {
                 data
             }) => {
 
-                //The following code is necessary because of differences in SQLITE and Postgres
+                //parseJson() is necessary because of differences in SQLITE and Postgres
                 //Postgres will break if JSON.parse is used, and Sqlite will break if it's not used
-                let actionThresholds;
-                if (process.env.DB_ENV === 'development' || process.env.DB_ENV === 'testing') {
-                    actionThresholds = JSON.parse(data);
-                } else {
-                    actionThresholds = data;
-                }
+                const actionThresholds = parseJson(data);
 
                 return {
                     id,
@@ -156,7 +151,7 @@ router.get('/', (req, res) => {
             res.status(200).send(responseWithParsedJSON);
         })
         .catch(err => {
-            console.log(err)
+            console.log(err);
             res.status(500).send({
                 message: 'Internal Server Error'
             });
@@ -164,3 +159,17 @@ router.get('/', (req, res) => {
 });
 
 module.exports = router;
+
+//The following code is necessary because of differences in SQLITE and Postgres
+//Postgres will break if JSON.parse is used, and Sqlite will break if it's not used
+function parseJson(data) {
+
+    //If using sqlite3
+    if (process.env.DB_ENV === 'development' || process.env.DB_ENV === 'testing') {
+        //Then use JSON.parse()
+        return JSON.parse(data);
+    } else {
+        return data;
+    }
+
+}
