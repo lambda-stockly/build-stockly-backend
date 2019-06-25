@@ -9,11 +9,9 @@ router.get('/', (req, res) => {
     favoritesApi
         .getByUserId(req.headers.user.id)
         .then(allFavorites => {
-            console.log(allFavorites)
             return stocksApi.getAllById(allFavorites.map(fav => fav.stock_id));
         })
         .then(allStocks => {
-            console.log(allStocks)
             const parsedStocks = allStocks.map(stock => {
 
                 let actionThresholds;
@@ -122,9 +120,6 @@ router.post('/', (req, res) => {
 
                 if (allFavorites !== undefined) {
 
-                    
-                    console.log('allFavorites',allFavorites, applicableStock.id)
-
                     //See if this stock is already in the user's favorites
                     if (allFavorites.find(stock => stock.stock_id === applicableStock.id)) {
                         res
@@ -159,8 +154,6 @@ router.post('/', (req, res) => {
 
                     //Parse the response (an array of objects) to match common response format
                     const parsedStocks = allStocks.map(stock => {
-
-                        console.log('stock',stock)
 
                         let actionThresholds;
                         if (process.env.DB_ENV === 'development' || process.env.DB_ENV === 'testing') {
