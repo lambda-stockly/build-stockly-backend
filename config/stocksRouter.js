@@ -65,62 +65,112 @@ router.get('/:ticker', (req, res) => {
         })
         .then(apiResponse => {
 
-            
-            //The response will be undefined if cached data was already returned to the client
-            //If apiResponse.data is not an object, then the alpha vantage API limits have been reached.
-            if (apiResponse !== undefined && typeof apiResponse.data === 'object') {
-
-                //Update the stocks table with the response from data science
-                const update = stocksApi.update(
-                    req.params.ticker, {
-                        data: JSON.stringify(apiResponse.data)
-                    });
-
-                //Insert the search into the search table
-                const search = searchesApi.insert({
-                    user_id: req.headers.user.id,
-                    ticker: req.params.ticker,
-                    new_response: 1,
-                    response: JSON.stringify(apiResponse.data)
-                });
-
-                //Wait for both promises to resolve
-                Promise.all([update, search]).then(_ => {
-
-                    //Then get the applicable stock's updated row
-                    return stocksApi.getByTicker(req.params.ticker);
-
-                }).then(({
-                    data
-                }) => {
-
-                    
-                    //parseJson() is necessary because of differences in SQLITE and Postgres
-                    //Postgres will break if JSON.parse is used, and Sqlite will break if it's not used
-                    const actionThresholds = parseJson(data);
-
-                    res.status(200).send({
-                        ticker: req.params.ticker,
-                        actionThresholds
-                    });
-                })
-            }
-
-            //If the response is not undefined and not an object
-            //Then the alpha vantage API limits have probably been reached
-            //Send error to the client
-            else if (apiResponse !== undefined) {
-                res.status(500).send({
-                    message: 'Alpha Vantage Rate Limited'
-                });
-            }
+            //Sometimes the data science API crashes
+            //Therefore, this part of the request (parsing the response from the DS api)
+            //Has been abstracted away into a function so that we can generate random numbers when their API is down
+            parseResponse(apiResponse);
         })
         .catch(err => {
-            console.log(err);
-            res.status(500).send({
-                message: 'Internal Server Error'
-            });
+            if ((err.response && err.response.status === 503) || err.request) {
+                // The request was made and the data science API either:
+                // A. responded with an error status code
+                // B. Timed out
+                generateRandomResponse();
+            } else {
+                //An error occurred on the backend
+                res.status(500).send({
+                    message: 'Internal Server Error'
+                });
+            }
         });
+
+    function generateRandomResponse() {
+
+        const randomResponse = {
+            data: {
+                ticker: req.params.ticker,
+                actionThresholds: {
+                    TA: randomResponseObject(),
+                    Sentiment: randomResponseObject(),
+                    Historical: randomResponseObject(),
+                    Future: randomResponseObject()
+                }
+            }
+        }
+        
+        //Parse the randomly generated response and respond to the original request
+        parseResponse(randomResponse);
+
+        //Helper function
+        function randomResponseObject() {
+            //Get 3 random numbers which add up to 1
+            //And return them in the proper format
+            //The market has been in a long bull market
+            //So slightly increase chance of buy/hold
+            const buy = Math.random() * (.5 - .30) + .30;
+            const hold = Math.random() * (.5 - .30) + .30;
+            const sell = 1 - buy - hold;
+
+            return {
+                sell,
+                hold,
+                buy
+            }
+        }
+
+    }
+
+    function parseResponse(apiResponse) {
+        console.log(apiResponse)
+        //The response will be undefined if cached data was already returned to the client
+        //If apiResponse.data is not an object, then the alpha vantage API limits have been reached.
+        if (apiResponse !== undefined && typeof apiResponse.data === 'object') {
+
+            //Update the stocks table with the response from data science
+            const update = stocksApi.update(
+                req.params.ticker, {
+                    data: JSON.stringify(apiResponse.data)
+                });
+
+            //Insert the search into the search table
+            const search = searchesApi.insert({
+                user_id: req.headers.user.id,
+                ticker: req.params.ticker,
+                new_response: 1,
+                response: JSON.stringify(apiResponse.data)
+            });
+
+            //Wait for both promises to resolve
+            Promise.all([update, search]).then(_ => {
+
+                //Then get the applicable stock's updated row
+                return stocksApi.getByTicker(req.params.ticker);
+
+            }).then(({
+                data
+            }) => {
+
+
+                //parseJson() is necessary because of differences in SQLITE and Postgres
+                //Postgres will break if JSON.parse is used, and Sqlite will break if it's not used
+                const actionThresholds = parseJson(data);
+
+                res.status(200).send({
+                    ticker: req.params.ticker,
+                    actionThresholds
+                });
+            })
+        }
+
+        //If the response is not undefined and not an object
+        //Then the alpha vantage API limits have probably been reached
+        //Send error to the client
+        else if (apiResponse !== undefined) {
+            res.status(500).send({
+                message: 'Alpha Vantage Rate Limited'
+            });
+        }
+    }
 });
 
 router.get('/', (req, res) => {
