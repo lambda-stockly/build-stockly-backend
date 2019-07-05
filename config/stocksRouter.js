@@ -88,13 +88,10 @@ router.get('/:ticker', (req, res) => {
 
         const randomResponse = {
             data: {
-                ticker: req.params.ticker,
-                actionThresholds: {
                     TA: randomResponseObject(),
                     Sentiment: randomResponseObject(),
                     Historical: randomResponseObject(),
                     Future: randomResponseObject()
-                }
             }
         }
         
