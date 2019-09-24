@@ -8,7 +8,7 @@ const favoritesRouter = require('./config/favoritesRouter');
 const topRouter = require('./config/topRouter');
 const server = express();
 
-server.use(cors());
+server.use(cors({ origin: 'https://app.getstockly.com' }));
 server.use(helmet());
 server.use(express.json());
 server.use('/auth', authRouter);
