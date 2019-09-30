@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const helmet = require('helmet')
+const helmet = require('helmet');
 const auth = require('./middleware/auth');
 const authRouter = require('./config/authRouter');
 const stocksRouter = require('./config/stocksRouter');
@@ -8,7 +8,20 @@ const favoritesRouter = require('./config/favoritesRouter');
 const topRouter = require('./config/topRouter');
 const server = express();
 
-server.use(cors({ origin: 'https://app.getstockly.com' }));
+const whitelist = ['https://app.getstockly.com', 'http://localhost:3000'];
+
+const corsOptions = {
+  origin: function(origin, callback) {
+    // checking for `!origin` allows requests from REST tools
+    if (whitelist.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+};
+
+server.use(cors(corsOptions));
 server.use(helmet());
 server.use(express.json());
 server.use('/auth', authRouter);
