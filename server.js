@@ -8,7 +8,11 @@ const favoritesRouter = require('./config/favoritesRouter');
 const topRouter = require('./config/topRouter');
 const server = express();
 
-const whitelist = ['https://app.getstockly.com', 'http://localhost:3000'];
+const whitelist = [
+  'https://app.getstockly.com',
+  'https://stockly.netlify.com',
+  'http://localhost:3000',
+];
 
 const corsOptions = {
   origin: function(origin, callback) {
