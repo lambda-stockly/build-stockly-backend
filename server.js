@@ -10,12 +10,12 @@ const server = express();
 
 const whitelist = [
   'https://app.getstockly.com',
-  'https://stockly.netlify.com',
+  'https://stockly.netlify.app/',
   'http://localhost:3000',
 ];
 
 const corsOptions = {
-  origin: function(origin, callback) {
+  origin: function (origin, callback) {
     // checking for `!origin` allows requests from REST tools
     if (whitelist.indexOf(origin) !== -1 || !origin) {
       callback(null, true);
