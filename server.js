@@ -10,7 +10,7 @@ const server = express();
 
 const whitelist = [
   'https://app.getstockly.com',
-  'https://stockly.netlify.app/',
+  'https://stockly.netlify.app',
   'http://localhost:3000',
 ];
 
